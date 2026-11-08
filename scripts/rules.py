@@ -25,7 +25,7 @@ TOPICS = {   # topic: (trigger words, rule numbers)
     '3d':         ('téléphone, objet 3D, logo 3D, icônes qui tournent, Blender', [20, 26, 27, 28, 29, 30, 31, 32, 33, 34, 36, 40,
                    41, 42, 43, 47, 57, 61, 62, 64, 70, 71, 72, 116]),
     'visuels':    ('captures d\'app, PSD, logos de tiers, visuels fournis', [17, 18, 79, 82, 84, 112]),
-    'adaptation': ('adapter à la marque, ajouts, écran IA', [75, 89, 105, 106, 112, 113, 114, 117]),
+    'adaptation': ('adapter à la marque, ajouts, écran IA, pub agent IA', [75, 89, 105, 106, 112, 113, 114, 117, 121]),
     'qualite':    ('tremblement, nervosité, zones mortes, effet PowerPoint', [50, 53, 54, 65, 67, 74, 87, 88, 110, 113, 115]),
     'rendu':      ('rendu, assemblage, HD, livraison, durée', [34, 50, 51, 103, 104, 109, 119]),
     'code':       ('pièges JavaScript / GSAP / recettes', [13, 16, 48, 58, 77]),

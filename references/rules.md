@@ -643,3 +643,13 @@ nécessaire). Une règle ne s'enlève jamais. Si elle doit changer, la nouvelle 
      au PATH les dossiers des outils installés pendant la session (winget Links, Chocolatey, Homebrew, `blender/app`),
      qu'un terminal déjà ouvert ne voit pas encore ; `render.mjs` fait de même pour ffmpeg. (3) Toute modification de
      l'installation se valide par le test `.github/workflows/installation.yml` sur les trois systèmes.
+
+121. **Pub « agent IA » (réf. Flows Agent) en mode Rapide : méthodes qui ont servi.** (1) Minutage relevé sur une planche
+     dense (1 image / 0,5 s, `ffmpeg fps=2` + horodatage) + boîtes mesurées des 3 gestes clés (carte qui s'ouvre, zoom
+     héros, vidéo plein écran) ajustées par `fit_easing` ; chaque scène du film garde ces instants. (2) Fond « peinture
+     fluide » recréé en WebGL (bruit fbm à domaine déformé, palette de marque, grain), fonction de t. (3) Transformation
+     d'image « aux couleurs du logo » : DEUX images de même cadrage (bleue / orange, la 2e faite par édition d'image chez
+     l'utilisateur) révélées par un masque qui monte + nappe pastel floutée ; une simple rotation de teinte n'est
+     acceptable que sans peau humaine. (4) Piège : un enfant en `visibility:visible` reste affiché même si sa scène est
+     masquée → n'écrire que `inherit` / `hidden` sur les enfants. (5) Images manquantes : prompts fournis, emplacements
+     `window.GEN` (gen.js) avec repli sur des images de l'utilisateur, pour avancer sans attendre.
