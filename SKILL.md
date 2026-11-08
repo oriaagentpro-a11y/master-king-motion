@@ -11,7 +11,7 @@ Rien n'est « à peu près » : chaque valeur vient d'une mesure sur la référe
 
 Outils : `scripts/` (Python), `engine/` (rendu Chromium + GSAP), `templates/film.html`.
 **Avant CHAQUE vidéo, lire `references/essentials.md`** (court) : choix AUTOMATIQUE du mode (Rapide par défaut,
-Studio si copie exacte demandée ou si une scène résiste aux contrôles), déclencheurs et règles de base. Les 121 règles
+Studio si copie exacte demandée ou si une scène résiste aux contrôles), déclencheurs et règles de base. Les 122 règles
 d'or de `references/rules.md` ne se lisent PAS en entier : Claude charge lui-même les sujets utiles au moment où ils
 servent, avec `python3 scripts/rules.py <sujet>` (`--topics` pour la liste : 3d, voix, texte, suivi, studio…).
 L'utilisateur n'a jamais à dire quelles règles appliquer. Commandes : `references/workflow.md` ; qualité :

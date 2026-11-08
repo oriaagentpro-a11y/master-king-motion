@@ -659,3 +659,14 @@ nécessaire). Une règle ne s'enlève jamais. Si elle doit changer, la nouvelle 
      30 ms à chaque bord) : zéro mot coupé. (7) Retour utilisatrice : cadre héros mesuré (80 % de la hauteur, coins ≈ 36 px)
      et carte de demande en verre dépoli (blanc 84 %, flou d'arrière-plan) qui chevauche l'image ; scènes d'interface
      sur fond blanc comme la référence ; aucune lueur ajoutée (aplats).
+
+122. **Pub « nerveuse » : jamais de voix qui se chevauchent, jamais de temps mort (retour utilisatrice : « mou, mécanique,
+     PowerPoint, les voix se mélangent »).** (1) Caler une voix découpée = placer les phrases À LA SUITE : début(n) ≥
+     fin(n-1) + 0,08 s, vérifié par `assert` dans le script de calage, AVANT de chercher à poser chaque phrase sur son
+     visuel ; ce sont les visuels qu'on recale sur les mots, jamais l'inverse. (2) Durée du film ≈ durée de la voix + 10-15 %
+     (28,8 s de voix → 33,4 s, pas 48,7 s) : une table de tempo `KN` [temps scène, temps film] linéaire par morceaux joue
+     les plans mesurés 1,5 à 2,8 fois plus vite là où il n'y a pas de voix, et ses nœuds posent chaque événement clé sur
+     son mot ; `seek(T)` appelle `render(sceneT(T))`. (3) Caméra vivante : chaque scène entre avec un coup de zoom
+     (1,07 → 1, expo, 0,28 s) puis pousse en continu (+1,8 %/s) ; flou de mouvement (`blurAt`) ± 0,12 s autour des coupes.
+     (4) Lecteur simulé : bouton et minuteur en `flex:0 0 auto`, onde `min-width:0; overflow:hidden` (sinon bouton écrasé
+     et minuteur qui déborde).
