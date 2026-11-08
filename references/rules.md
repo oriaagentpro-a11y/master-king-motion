@@ -652,4 +652,10 @@ nécessaire). Une règle ne s'enlève jamais. Si elle doit changer, la nouvelle 
      l'utilisateur) révélées par un masque qui monte + nappe pastel floutée ; une simple rotation de teinte n'est
      acceptable que sans peau humaine. (4) Piège : un enfant en `visibility:visible` reste affiché même si sa scène est
      masquée → n'écrire que `inherit` / `hidden` sur les enfants. (5) Images manquantes : prompts fournis, emplacements
-     `window.GEN` (gen.js) avec repli sur des images de l'utilisateur, pour avancer sans attendre.
+     `window.GEN` (gen.js) avec repli sur des images de l'utilisateur, pour avancer sans attendre. (6) Contrôle final de synchro
+     OBLIGATOIRE avant le rendu : retranscrire la voix calée (faster-whisper, mots horodatés), lister chaque mot clé avec
+     l'instant de SON élément à l'image, et recaler l'élément (jamais la voix) quand l'écart dépasse 0,15 s ; un élément
+     ne doit pas apparaître avant son mot. Puis vérifier que chaque découpe de voix tombe dans un silence (< -40 dB sur
+     30 ms à chaque bord) : zéro mot coupé. (7) Retour utilisatrice : cadre héros mesuré (80 % de la hauteur, coins ≈ 36 px)
+     et carte de demande en verre dépoli (blanc 84 %, flou d'arrière-plan) qui chevauche l'image ; scènes d'interface
+     sur fond blanc comme la référence ; aucune lueur ajoutée (aplats).
