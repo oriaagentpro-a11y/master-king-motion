@@ -41,7 +41,13 @@ surfaces suivies = `homography_track.py` → `rectify_median.py` (planche média
 
 ## Les 7 phases (dans l'ordre, sans en sauter)
 
-0. **Installation** (une fois) : `bash install.sh`, puis `python3 scripts/doctor.py` → « Tout est prêt ».
+0. **Installation automatique (Claude la fait lui-même, sans rien demander à l'utilisateur)** : au début de CHAQUE
+   travail, lancer `python3 scripts/ensure_ready.py` depuis le dossier du skill (sous Windows : `python`). S'il
+   affiche « PRÊT », continuer. Sinon il installe tout ce qui manque, une seule fois : Node.js, Python, FFmpeg, git,
+   modules Node (GSAP, Three.js, Playwright), Chromium, modules Python, modèle de transcription de la voix et
+   Blender 4.2 LTS (dans `blender/app/`), puis un rendu de test. Lancer la commande avec un long délai
+   (≈ 20 min) ou en arrière-plan. Ne JAMAIS demander à l'utilisateur d'installer quoi que ce soit lui-même ;
+   seul un mot de passe administrateur (sudo) peut lui être demandé si le système l'exige.
    Projet : `python3 scripts/new_project.py <dossier> --ref ref.mp4 [--ref2 …] --music … --voice … --format 16:9`.
 
 1. **Décalquer puis disséquer la référence (règle 90 : décalque reverse-motion mesuré AVANT toute adaptation ; SSIM ≥ 0,98 par image, 0 fantôme)**

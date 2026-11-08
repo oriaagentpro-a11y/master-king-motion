@@ -619,3 +619,10 @@ nécessaire). Une règle ne s'enlève jamais. Si elle doit changer, la nouvelle 
      images du film se révèlent derrière une ligne de balayage ; tout piloté par la progression u du plan (0 → 1).
      Texte de phrase finale : montée douce en cascade (16 px, cubique) aux instants mesurés, ligne de base et graisse
      uniques, jamais les pistes y mesurées mot par mot (sauts de ligne de base).
+
+118. **Le skill s'installe tout seul, entièrement, au premier usage.** Phase 0 = `python3 scripts/ensure_ready.py`,
+     lancé par Claude sans rien demander : marqueur `.installed` + vérification rapide (`doctor.py --no-render`) → « PRÊT » ;
+     sinon `install.sh` (Linux / macOS / WSL) ou `install.ps1` (Windows) installe outils système (apt / dnf / pacman /
+     Homebrew / winget), modules Node, Chromium, modules Python, modèle faster-whisper et Blender 4.2 LTS portable dans
+     `blender/app/` (archive Linux, .dmg macOS, .zip Windows), puis `doctor.py` avec rendu de test (Blender inclus).
+     Jamais « installez Blender vous-même » : l'utilisateur ne doit rien faire, sauf un mot de passe sudo si exigé.

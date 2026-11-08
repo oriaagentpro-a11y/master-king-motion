@@ -24,45 +24,43 @@ Claude mesure l'ADN de la référence (rythme, courbes d'animation, durées, tra
 - **72 scripts Python** de mesure et de vérification : suivi d'éléments, homographies, ajustement d'easing, audit, lissage, rythme.
 - **Un moteur de rendu** Chromium + GSAP + Three.js, image par image, avec flou de mouvement.
 - **De la 3D photoréaliste dans Blender Cycles** : smartphone modélisé, icônes, objets, composités sur fond transparent.
-- **117 règles d'or** apprises sur des projets réels (`references/rules.md`).
+- **118 règles d'or** apprises sur des projets réels (`references/rules.md`).
 
 ---
 
-## 🚀 Installation
+## 🚀 Installation : vous n'avez rien à installer à la main
 
-**Prérequis :** Node.js 18+, Python 3.9+, FFmpeg. Blender 4.2 LTS est optionnel : il ne sert que pour la 3D.
-
-```bash
-git clone https://github.com/oriaagentpro-a11y/master-king-motion.git
-```
+Placez le skill dans vos skills Claude Code :
 
 ```bash
-cd master-king-motion && bash install.sh
+git clone https://github.com/oriaagentpro-a11y/master-king-motion.git ~/.claude/skills/master-king-motion
 ```
 
-Sous Windows (PowerShell) :
+C'est tout. **À la première vidéo demandée, Claude installe lui-même tout ce dont le skill a besoin**, sans vous poser de question :
+
+| Composant | Rôle |
+|---|---|
+| Node.js, Python, FFmpeg, git | outils de base (installés s'ils manquent : apt / dnf / pacman, Homebrew sur Mac, winget sur Windows) |
+| GSAP, Three.js, Playwright + Chromium | moteur de rendu image par image |
+| OpenCV, scikit-image, SciPy, librosa… | mesure de la référence, audio, rythme |
+| faster-whisper + son modèle | calage de la voix off mot à mot |
+| **Blender 4.2 LTS** | 3D photoréaliste (Cycles), installé dans le dossier du skill |
+
+L'installation se fait une seule fois (5 à 15 min selon la connexion) et se termine par un rendu de test. Les fois suivantes, la vérification prend quelques secondes. Seul un mot de passe administrateur peut vous être demandé si votre système l'exige.
+
+**Installer à l'avance, sans Claude** (facultatif) :
+
+```bash
+python3 ~/.claude/skills/master-king-motion/scripts/ensure_ready.py
+```
+
+Sous Windows (PowerShell), depuis le dossier du skill :
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File install.ps1
 ```
 
-Vérification :
-
-```bash
-python3 scripts/doctor.py
-```
-
-Le diagnostic doit afficher **« Tout est prêt »**.
-
-### L'installer comme skill Claude Code
-
-Copiez le dossier dans vos skills personnels :
-
-```bash
-cp -r master-king-motion ~/.claude/skills/master-king-motion
-```
-
-Claude le chargera automatiquement dès que vous demanderez par exemple : *« Fais-moi la même vidéo que celle-ci pour ma marque »*.
+Le diagnostic final doit afficher **« Tout est prêt »**.
 
 ---
 
@@ -91,8 +89,9 @@ Claude suit les 7 phases décrites dans `SKILL.md`. Il vous rend un storyboard �
 ```
 master-king-motion/
 ├── SKILL.md            ← le skill : 7 phases, pipeline, règles absolues
+├── install.sh / .ps1   ← installation complète automatique (Blender compris)
 ├── references/
-│   ├── rules.md        ← 117 règles d'or (à lire avant chaque vidéo)
+│   ├── rules.md        ← 118 règles d'or (à lire avant chaque vidéo)
 │   ├── workflow.md     ← les commandes de chaque phase
 │   ├── doctrine.md     ← les règles de qualité
 │   ├── verification.md ← la passe image par image avant livraison

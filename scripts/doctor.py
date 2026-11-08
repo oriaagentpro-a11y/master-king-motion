@@ -25,7 +25,8 @@ for exe, fix in [('node', 'Node.js 18+ : https://nodejs.org'), ('ffmpeg', 'brew/
                  ('ffprobe', 'fourni avec ffmpeg')]:
     line(shutil.which(exe) is not None, exe, fix)
 for mod, pkg in [('numpy', 'numpy'), ('cv2', 'opencv-python'), ('skimage', 'scikit-image'), ('scipy', 'scipy'),
-                 ('PIL', 'pillow'), ('playwright', 'playwright'), ('librosa', 'librosa'), ('fontTools', 'fonttools')]:
+                 ('PIL', 'pillow'), ('playwright', 'playwright'), ('librosa', 'librosa'), ('fontTools', 'fonttools'),
+                 ('faster_whisper', 'faster-whisper'), ('psd_tools', 'psd-tools')]:
     try:
         importlib.import_module(mod); good = True
     except Exception:  # noqa: BLE001
@@ -36,6 +37,15 @@ for pkg in ['playwright', 'gsap', 'pngjs', 'd3-geo', 'topojson-client', 'world-a
     line(os.path.isdir(os.path.join(nm, pkg)), f'module Node {pkg}', f'cd {os.path.join(ROOT, "engine")} && npm install')
 exe = rmcommon.chrome_path()
 line(exe is not None, f'Chromium ({exe or "introuvable"})', 'cd engine && npx playwright install chromium   (ou CHROME_PATH=...)')
+bl = next((b for b in [os.environ.get('BLENDER'), os.path.join(ROOT, 'blender', 'app', 'blender.exe'),
+                       os.path.join(ROOT, 'blender', 'app', 'blender')] if b and os.path.exists(b)), None)
+bv = ''
+if bl:
+    try:
+        bv = subprocess.run([bl, '--version'], capture_output=True, text=True, timeout=120).stdout.split('\n')[0].strip()
+    except Exception:  # noqa: BLE001
+        bv = ''
+line(bool(bv), f'Blender ({bv or "introuvable"}) : 3D Cycles', f'bash {os.path.join(ROOT, "blender", "install_blender.sh")}   (Windows : install.ps1)')
 
 if ok and '--no-render' not in sys.argv:
     tmp = tempfile.mkdtemp(prefix='rm-doctor-')
