@@ -1,0 +1,11 @@
+# Outils Python de reverse-motion (Python 3.9+)
+numpy>=1.24
+opencv-python>=4.8
+scikit-image>=0.21
+scipy>=1.10
+pillow>=10.0
+playwright>=1.40
+librosa>=0.10
+fonttools>=4.40
+faster-whisper>=1.0  # optionnel : alignement voix / script (--align)
+psd-tools>=1.9          # psd_decompose.py (designs fournis en PSD)

@@ -1,0 +1,142 @@
+# 👑 Master King Motion
+
+**Un skill Claude pour produire des vidéos motion design de niveau studio, inspirées au détail près d'une vidéo de référence, mais avec votre contenu.**
+
+Vous donnez une vidéo d'inspiration (une pub, un lancement, une promo d'app) et votre contenu : textes, logo, captures, couleurs, musique, voix off.
+Claude mesure l'ADN de la référence (rythme, courbes d'animation, durées, transitions, typo, palette, finition), le recrée entièrement en code, puis l'applique à votre marque. La ressemblance est **prouvée par des mesures**, pas estimée à l'œil.
+
+> Tout est recréé en code (HTML / SVG / GSAP / Three.js / Blender). Aucun élément n'est extrait de la vidéo de référence.
+
+---
+
+## ✨ Ce que fait le skill
+
+| Étape | Ce qui se passe |
+|---|---|
+| **1. Décalque** | La référence est reproduite image par image en code, avec un SSIM ≥ 0,98 visé par scène et zéro texte fantôme. |
+| **2. Dissection** | Coupes, scènes, palette, énergie de mouvement, courbes d'easing GSAP, tempo, flou de mouvement, grain. |
+| **3. Script de voix** | Un script écrit plan par plan sur le rythme de la référence, à générer dans votre outil de voix. |
+| **4. Storyboard** | Une image par scène en rendu réel, pour validation avant le rendu final. |
+| **5. Adaptation** | Vos textes, couleurs et visuels sur les pistes de mouvement mesurées. La voix est calée mot par mot, la musique mixée sous la voix. |
+| **6. Rendu et preuves** | Rendu 1080p (ou 9:16, 1:1, 4:5). Contrôles de rythme (`rhythm.py`), de tremblement, de fantômes et de style. |
+
+**Ce qui est inclus :**
+- **72 scripts Python** de mesure et de vérification : suivi d'éléments, homographies, ajustement d'easing, audit, lissage, rythme.
+- **Un moteur de rendu** Chromium + GSAP + Three.js, image par image, avec flou de mouvement.
+- **De la 3D photoréaliste dans Blender Cycles** : smartphone modélisé, icônes, objets, composités sur fond transparent.
+- **117 règles d'or** apprises sur des projets réels (`references/rules.md`).
+
+---
+
+## 🚀 Installation
+
+**Prérequis :** Node.js 18+, Python 3.9+, FFmpeg. Blender 4.2 LTS est optionnel : il ne sert que pour la 3D.
+
+```bash
+git clone https://github.com/oriaagentpro-a11y/master-king-motion.git
+```
+
+```bash
+cd master-king-motion && bash install.sh
+```
+
+Sous Windows (PowerShell) :
+
+```powershell
+powershell -ExecutionPolicy Bypass -File install.ps1
+```
+
+Vérification :
+
+```bash
+python3 scripts/doctor.py
+```
+
+Le diagnostic doit afficher **« Tout est prêt »**.
+
+### L'installer comme skill Claude Code
+
+Copiez le dossier dans vos skills personnels :
+
+```bash
+cp -r master-king-motion ~/.claude/skills/master-king-motion
+```
+
+Claude le chargera automatiquement dès que vous demanderez par exemple : *« Fais-moi la même vidéo que celle-ci pour ma marque »*.
+
+---
+
+## 🎬 Utilisation
+
+Démarrez un projet :
+
+```bash
+python3 scripts/new_project.py mon_projet --ref reference.mp4 --music musique.mp3 --voice voix.wav --format 16:9
+```
+
+Puis demandez simplement à Claude :
+
+> « Voici ma vidéo de référence et mon affiche. Reproduis le motion au détail près pour mon lancement. »
+
+Claude suit les 7 phases décrites dans `SKILL.md`. Il vous rend un storyboard à valider avant le rendu final.
+
+**Formats :** 16:9 (1920×1080) par défaut. Précisez *vertical / TikTok / Reels* pour du 9:16, *carré* pour du 1:1, *post Instagram* pour du 4:5.
+
+**Audio :** vous fournissez la musique et la voix off. Si elles manquent, Claude vous propose un script de voix minuté et une direction musicale.
+
+---
+
+## 📁 Structure
+
+```
+master-king-motion/
+├── SKILL.md            ← le skill : 7 phases, pipeline, règles absolues
+├── references/
+│   ├── rules.md        ← 117 règles d'or (à lire avant chaque vidéo)
+│   ├── workflow.md     ← les commandes de chaque phase
+│   ├── doctrine.md     ← les règles de qualité
+│   ├── verification.md ← la passe image par image avant livraison
+│   └── reverse-motion-METHODS.md
+├── scripts/            ← mesure, suivi, audit, rythme, assemblage (Python)
+│   └── wordfit/        ← ajustement des textes et des phrases
+├── engine/             ← moteur de rendu (render.mjs, GSAP, Three.js)
+├── blender/            ← 3D Cycles : téléphone, icônes, objets
+├── templates/          ← gabarit de film HTML
+└── examples/demo/      ← démo libre de droits de bout en bout
+```
+
+---
+
+## 🧪 Essayer la démo
+
+```bash
+cd examples/demo && python3 make_source.py
+```
+
+```bash
+python3 ../../scripts/assemble.py manifest.json out
+```
+
+```bash
+python3 ../../scripts/assemble.py manifest.json out_brand --brand brand.example.js
+```
+
+Vous obtenez une copie fidèle de la vidéo source, puis sa version aux couleurs d'une autre marque.
+
+---
+
+## ⚖️ Usage responsable
+
+- Les vidéos que vous prenez comme référence restent la propriété de leurs auteurs. Servez-vous-en comme **inspiration de mouvement**, pas pour copier une marque, un logo ou des personnages.
+- Le paquet ne contient aucune vidéo, image ou plaque tirée d'une œuvre tierce.
+- Vérifiez les droits de la musique et des voix que vous utilisez.
+
+## 📜 Licence et crédits
+
+Code sous licence **MIT** (voir `LICENSE`). La police Outfit est sous licence SIL OFL 1.1. Les dépendances et ressources tierces sont listées dans `CREDITS.md`.
+
+Moteur de mesure dérivé de *reverse-motion* (MIT).
+
+---
+
+**Créé par Marion de SOUZA**, Graphiste Pro · AI Workflow Architect · AI Software Builder.
