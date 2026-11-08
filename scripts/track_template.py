@@ -4,6 +4,7 @@ Usage: python3 track_template.py <video> <template_frame_s> <x> <y> <w> <h> <sta
 The template is cut from the given frame; each frame is searched at several scales.
 Output per frame: top-left x, y, scale and match score (frames under min-score are marked missing).
 """
+import os as _o, sys as _s; _s.path.insert(0, _o.path.dirname(_o.path.abspath(__file__))); import _mkpy  # noqa: E401,E702,F401  (bon Python + PATH)
 import sys, json
 import numpy as np
 import cv2

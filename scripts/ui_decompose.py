@@ -13,6 +13,7 @@ kind guess: text-like / icon-like / block) and out_dir/overview.png (numbered bo
 Claude then LOOKS at the overview: texts are rebuilt as live text in the brand font (sharper, editable, can be
 typed / counted), icons and illustrations are used as cropped layers, cards as rebuilt HTML boxes.
 """
+import os as _o, sys as _s; _s.path.insert(0, _o.path.dirname(_o.path.abspath(__file__))); import _mkpy  # noqa: E401,E702,F401  (bon Python + PATH)
 import sys, os, json
 import numpy as np
 import cv2

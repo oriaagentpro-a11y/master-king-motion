@@ -6,6 +6,7 @@ Searches every standard GSAP ease, the start time and the duration on a grid,
 solves from/to by least squares, and returns the best fit with its error in the
 measurement's own units (pixels, degrees, opacity...).
 """
+import os as _o, sys as _s; _s.path.insert(0, _o.path.dirname(_o.path.abspath(__file__))); import _mkpy  # noqa: E401,E702,F401  (bon Python + PATH)
 import sys, json, math
 import numpy as np
 

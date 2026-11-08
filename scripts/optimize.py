@@ -9,6 +9,7 @@ The scene reads overrides from its URL hash (JSON). Coordinate descent: each par
 tried at several values, the best is kept, the step shrinks every round. Prints the score
 before and after; writes the best overrides (merged with base) to out_params.json.
 """
+import os as _o, sys as _s; _s.path.insert(0, _o.path.dirname(_o.path.abspath(__file__))); import _mkpy  # noqa: E401,E702,F401  (bon Python + PATH)
 import sys, json, copy, os, urllib.parse
 import numpy as np
 import cv2

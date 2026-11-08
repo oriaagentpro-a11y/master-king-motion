@@ -5,6 +5,7 @@ Renders ONE frame of the job (the middle one by default) into a temp folder with
 (GPU used automatically when present), times it, and prints the device, seconds per frame and the total.
 The first frame of a run also pays the scene build / shader compilation, so it is subtracted once.
 """
+import os as _o, sys as _s; _s.path.insert(0, _o.path.dirname(_o.path.abspath(__file__))); import _mkpy  # noqa: E401,E702,F401  (bon Python + PATH)
 import os, sys, json, time, shutil, subprocess, tempfile
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))

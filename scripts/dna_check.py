@@ -11,6 +11,7 @@ With --film: every GSAP ease written in the film must exist in the DNA (or be ma
 no default ease sneaks into the new video.
 Exit code 1 when something blocks (--strict: warnings block too).
 """
+import os as _o, sys as _s; _s.path.insert(0, _o.path.dirname(_o.path.abspath(__file__))); import _mkpy  # noqa: E401,E702,F401  (bon Python + PATH)
 import sys, os, re, json
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))

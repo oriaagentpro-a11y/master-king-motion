@@ -11,6 +11,7 @@ Le film pose son contenu (le décalque recréé en code, puis le contenu de l'ut
 caméra, la perspective et la parallaxe de l'écran sont ceux de la référence, à la fraction de pixel.
 Images floues (fouets) : peu de points -> null ; le film interpole les coins entre les images voisines.
 """
+import os as _o, sys as _s; _s.path.insert(0, _o.path.dirname(_o.path.abspath(__file__))); import _mkpy  # noqa: E401,E702,F401  (bon Python + PATH)
 import sys, json
 import numpy as np
 import cv2

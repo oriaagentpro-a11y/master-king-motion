@@ -6,6 +6,7 @@ Usage: python3 track_pad.py track.json out.json --pad 300 [--padx 400 --pady 200
 Coins du nouveau canevas = homographie de chaque image (ancien canevas -> image) appliquée au rectangle agrandi.
 Le film pose la planche agrandie avec ces nouveaux coins (même mouvement, plus de bords vides).
 """
+import os as _o, sys as _s; _s.path.insert(0, _o.path.dirname(_o.path.abspath(__file__))); import _mkpy  # noqa: E401,E702,F401  (bon Python + PATH)
 import sys, json
 import numpy as np
 import cv2

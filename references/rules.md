@@ -635,3 +635,11 @@ nécessaire). Une règle ne s'enlève jamais. Si elle doit changer, la nouvelle 
      (`--topics`, `--match mot`). Toute nouvelle règle est rangée dans un sujet de `scripts/rules.py`. Avant un long rendu :
      `render_estimate.py job.json` (Blender, carte graphique automatique : OptiX / CUDA / HIP / Metal / oneAPI, `MK_DEVICE=CPU`
      pour forcer le processeur) ou 1 s de film chronométrée ; annoncer la durée, puis rendre en arrière-plan.
+
+120. **Installation robuste sur toutes les machines (leçon du test GitHub Linux / macOS / Windows).** (1) Python 3.9 à 3.13
+     seulement : un Python trop récent (3.15 sur macOS) n'a pas encore les modules compilés (scipy, opencv) → l'installeur
+     choisit 3.12 / 3.11 / 3.13 / 3.10, ou installe 3.12 (Homebrew, winget, sinon uv), et l'enregistre dans `.python`.
+     (2) Chaque script commence par `import _mkpy` : il se relance avec ce Python si on l'a lancé avec un autre, et ajoute
+     au PATH les dossiers des outils installés pendant la session (winget Links, Chocolatey, Homebrew, `blender/app`),
+     qu'un terminal déjà ouvert ne voit pas encore ; `render.mjs` fait de même pour ffmpeg. (3) Toute modification de
+     l'installation se valide par le test `.github/workflows/installation.yml` sur les trois systèmes.

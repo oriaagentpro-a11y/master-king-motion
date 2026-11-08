@@ -4,6 +4,7 @@ Usage: python3 compose.py <out.mp4> <start_s> <end_s> <layer> [<layer> ...] [--a
 layer = "path:start_s" where path is an .mp4 (opaque) or a folder of RGBA PNG frames (f_00000.png...),
 and start_s is the global time of the layer's first frame. Frames outside a layer's range are skipped.
 """
+import os as _o, sys as _s; _s.path.insert(0, _o.path.dirname(_o.path.abspath(__file__))); import _mkpy  # noqa: E401,E702,F401  (bon Python + PATH)
 import sys, os, glob, shutil, subprocess
 import numpy as np
 FPS = 30.0

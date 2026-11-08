@@ -28,21 +28,37 @@ pkg_install() {   # pkg_install <nom apt> <nom dnf> <nom pacman> <nom brew>
 }
 
 node_ok() { command -v node >/dev/null && [[ "$(node -p 'process.versions.node.split(".")[0]')" -ge 18 ]]; }
-py_find() { for p in "${PYTHON:-}" python3 python; do [[ -n "$p" ]] && command -v "$p" >/dev/null \
-  && "$p" -c 'import sys; sys.exit(sys.version_info < (3, 9))' 2>/dev/null && { echo "$p"; return; }; done; }
+py_ok() { "$1" -c 'import sys; sys.exit(not ((3, 9) <= sys.version_info[:2] <= (3, 13)))' 2>/dev/null; }
+py_find() {   # a Python 3.9-3.13 (scipy / opencv / faster-whisper wheels exist for these); newest first
+  local rec="$HERE/.python"; [[ -s "$rec" ]] && py_ok "$(cat "$rec")" && { cat "$rec"; return; }
+  for p in "${PYTHON:-}" python3.12 python3.11 python3.13 python3.10 python3 python \
+           /opt/homebrew/bin/python3.12 /usr/local/bin/python3.12 "$HOME/.local/bin/python3.12"; do
+    [[ -n "$p" ]] && command -v "$p" >/dev/null && py_ok "$p" && { command -v "$p"; return; }
+  done; }
+py_install() {   # install a Python 3.12 when none of 3.9-3.13 is present (e.g. only 3.14+ on the machine)
+  if [[ "$OS" == "Darwin" ]]; then pkg_install - - - python@3.12; return; fi
+  if command -v apt-get >/dev/null && [[ -z "$(command -v python3)" ]]; then pkg_install "python3 python3-pip python3-venv" - - -; fi
+  [[ -n "$(py_find)" ]] && return
+  echo "installation d'un Python 3.12 autonome (uv)"
+  command -v uv >/dev/null || curl -LsSf https://astral.sh/uv/install.sh | sh
+  export PATH="$HOME/.local/bin:$HOME/.cargo/bin:$PATH"
+  uv python install 3.12 && ln -sf "$(uv python find 3.12)" "$HOME/.local/bin/python3.12"
+}
 
 if [[ "${1:-}" != "--check" ]]; then
   step "Outils système"
   command -v git  >/dev/null || pkg_install git git git git
   command -v curl >/dev/null || pkg_install curl curl curl curl
   command -v ffmpeg >/dev/null || pkg_install ffmpeg ffmpeg ffmpeg ffmpeg
-  [[ -n "$(py_find)" ]] || pkg_install "python3 python3-pip python3-venv" "python3 python3-pip" "python python-pip" python@3.12
+  [[ -n "$(py_find)" ]] || py_install
   if ! node_ok; then
     if [[ "$OS" == "Linux" ]] && command -v apt-get >/dev/null; then
       curl -fsSL https://deb.nodesource.com/setup_20.x | $SUDO -E bash - && $SUDO apt-get install -y -qq nodejs
     else pkg_install nodejs nodejs nodejs node; fi
   fi
-  PY="$(py_find)"; [[ -n "$PY" ]] || { echo "Python 3.9+ introuvable après installation"; exit 1; }
+  PY="$(py_find)"; [[ -n "$PY" ]] || { echo "Python 3.9-3.13 introuvable après installation"; exit 1; }
+  "$PY" -m pip --version >/dev/null 2>&1 || "$PY" -m ensurepip --upgrade >/dev/null 2>&1 || true
+  echo "$PY" > "$HERE/.python"   # every script relaunches itself with this interpreter (scripts/_mkpy.py)
   node_ok || { echo "Node.js 18+ introuvable après installation"; exit 1; }
   echo "Node $(node -v) · $($PY --version) · $(ffmpeg -version | head -1 | cut -d' ' -f1-3)"
 
@@ -76,5 +92,5 @@ if [[ "${1:-}" != "--check" ]]; then
 fi
 
 step "Diagnostic"
-PY="$(py_find)"
+PY="$(py_find)"; PY="${PY:-python3}"
 "$PY" "$HERE/scripts/doctor.py" && date -u +%FT%TZ > "$HERE/.installed"

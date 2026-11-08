@@ -3,6 +3,7 @@
 Usage: python3 doctor.py [--no-render]
 Prints one line per requirement (OK / MANQUANT and how to fix it). Exit code 1 if something is missing.
 """
+import os as _o, sys as _s; _s.path.insert(0, _o.path.dirname(_o.path.abspath(__file__))); import _mkpy  # noqa: E401,E702,F401  (bon Python + PATH)
 import sys, os, shutil, subprocess, importlib, tempfile
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -20,7 +21,7 @@ def line(good, what, fix=''):
 
 
 print('master-king-motion : vérification de l\'installation')
-line(sys.version_info >= (3, 9), f'Python {sys.version.split()[0]}', 'Python 3.9 ou plus récent')
+line((3, 9) <= sys.version_info[:2] <= (3, 13), f'Python {sys.version.split()[0]}', 'Python 3.9 à 3.13 : python3 scripts/ensure_ready.py --force')
 for exe, fix in [('node', 'Node.js 18+ : https://nodejs.org'), ('ffmpeg', 'brew/apt/winget install ffmpeg'),
                  ('ffprobe', 'fourni avec ffmpeg')]:
     line(shutil.which(exe) is not None, exe, fix)

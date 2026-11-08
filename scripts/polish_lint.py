@@ -19,6 +19,7 @@ Code (--film)
   defaults     a tween without an explicit ease, a ".to(" with 0.5 s and no ease, fonts without @font-face/FontFace
 Exit code 1 when a blocking problem remains. Each item is fixed or explained in the delivery report.
 """
+import os as _o, sys as _s; _s.path.insert(0, _o.path.dirname(_o.path.abspath(__file__))); import _mkpy  # noqa: E401,E702,F401  (bon Python + PATH)
 import sys, os, re, json, subprocess
 import numpy as np
 

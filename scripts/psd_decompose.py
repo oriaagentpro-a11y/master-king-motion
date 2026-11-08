@@ -17,6 +17,7 @@ Notes:
   different aspect), so the typographic scale of the design is kept.
 - the fonts named in layers.json must be loaded in the film (user's files or the closest Google font, named in the report).
 """
+import os as _o, sys as _s; _s.path.insert(0, _o.path.dirname(_o.path.abspath(__file__))); import _mkpy  # noqa: E401,E702,F401  (bon Python + PATH)
 import sys, os, json, re
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))

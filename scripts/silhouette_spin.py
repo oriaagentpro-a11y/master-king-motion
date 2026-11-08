@@ -10,6 +10,7 @@ Prints per distinct frame (rule 52): centre, axes, ratio, angle (deg). Spin spee
 edge-on frame (ratio minimum) and the next face-on frame (ratio ~1) divided by the time: 90 deg / dt.
 Measured here: purple token A f173 (edge-on, 0.18) -> f181 (face, 0.97) = 90 deg in 0.28 s ~ 320 deg/s.
 """
+import os as _o, sys as _s; _s.path.insert(0, _o.path.dirname(_o.path.abspath(__file__))); import _mkpy  # noqa: E401,E702,F401  (bon Python + PATH)
 import sys, os, math
 import numpy as np
 import cv2

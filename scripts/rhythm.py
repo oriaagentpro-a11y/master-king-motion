@@ -9,6 +9,7 @@ Colours differ in a rebrand, so pixels are not compared. What is compared is WHE
 Verdict "identique" when the best lag is 0 and either the curves correlate at >= 0.95, or at least 90 % of the
 events are matched at 0 or +-1 frame (a changed text or logo adds or removes a few edge events of its own).
 """
+import os as _o, sys as _s; _s.path.insert(0, _o.path.dirname(_o.path.abspath(__file__))); import _mkpy  # noqa: E401,E702,F401  (bon Python + PATH)
 import sys, os, json, subprocess
 import numpy as np
 import cv2

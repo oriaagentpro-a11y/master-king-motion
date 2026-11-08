@@ -8,6 +8,7 @@ Usage: python3 fetch_reference.py <url> out.mp4
 - Prints the final size, fps and duration. Pinterest caps at 736x414 for 16:9 videos: say so in the report (all
   pixel measurements are then at 736x414, like reference A of the MTN case).
 """
+import os as _o, sys as _s; _s.path.insert(0, _o.path.dirname(_o.path.abspath(__file__))); import _mkpy  # noqa: E401,E702,F401  (bon Python + PATH)
 import sys, re, subprocess, json, urllib.request
 
 

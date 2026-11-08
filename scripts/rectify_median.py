@@ -11,6 +11,7 @@ Usage: python3 rectify_median.py ref.mp4 track.json out.png [--frames a-b] [--st
 Sortie : une image de travail (PNG) qu'on passe à vectorize_image.py --image ; elle n'entre JAMAIS telle quelle dans le
 film (règle 93) : c'est la planche de mesure qui donne au vecteur ses couleurs et ses formes exactes.
 """
+import os as _o, sys as _s; _s.path.insert(0, _o.path.dirname(_o.path.abspath(__file__))); import _mkpy  # noqa: E401,E702,F401  (bon Python + PATH)
 import sys, json
 import numpy as np
 import cv2

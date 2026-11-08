@@ -11,6 +11,7 @@ For each frame:
   filled, the most circular large component -> centre and radius (minimum enclosing circle).
 The scene redraws the shape as a polygon from these profiles and places the ball each frame.
 """
+import os as _o, sys as _s; _s.path.insert(0, _o.path.dirname(_o.path.abspath(__file__))); import _mkpy  # noqa: E401,E702,F401  (bon Python + PATH)
 import sys, json
 import numpy as np
 import cv2

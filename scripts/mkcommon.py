@@ -2,6 +2,7 @@
 
 Everything here is measurement plumbing used by dissect.py, style_compare.py, polish_lint.py, storyboard.py.
 """
+import os as _o, sys as _s; _s.path.insert(0, _o.path.dirname(_o.path.abspath(__file__))); import _mkpy  # noqa: E401,E702,F401  (bon Python + PATH)
 import os, sys, json, subprocess
 import numpy as np
 import cv2

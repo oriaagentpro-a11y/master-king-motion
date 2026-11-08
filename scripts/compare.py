@@ -4,6 +4,7 @@ Usage: python3 compare.py <original.mp4> <copy.mp4> <start_s> <end_s> <out_dir> 
 Writes out_dir/metrics.json (SSIM and mean Delta E 2000 per frame), a side-by-side
 video (original | copy | differences) and stills of the worst frames.
 """
+import os as _o, sys as _s; _s.path.insert(0, _o.path.dirname(_o.path.abspath(__file__))); import _mkpy  # noqa: E401,E702,F401  (bon Python + PATH)
 import sys, os, json, shutil, subprocess
 import numpy as np
 import cv2

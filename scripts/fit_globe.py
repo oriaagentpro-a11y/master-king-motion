@@ -13,6 +13,7 @@ Perspective: pose may carry a 7th value, the camera distance in sphere radii (Af
 Camera: c = Rz(roll) . Rx(lat0) . Ry(-lon0) . w ; screen x = cx + r*c.x, y = cy - r*c.y, visible if c.z > 0
 with w(lon, lat) = (cos(lat) sin(lon), sin(lat), cos(lat) cos(lon)).
 """
+import os as _o, sys as _s; _s.path.insert(0, _o.path.dirname(_o.path.abspath(__file__))); import _mkpy  # noqa: E401,E702,F401  (bon Python + PATH)
 import sys, os, json, math
 import numpy as np
 import cv2

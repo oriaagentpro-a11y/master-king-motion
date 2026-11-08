@@ -8,6 +8,7 @@ Usage: python3 project_points.py job.json out.js --var P3PTS --points name:x,y,z
 - the camera is the job's: origin, looking -Z, vertical fov, rotation mode ZXY (R = Ry.Rx.Rz) like render_job.py.
 Writes `window.<var> = {W, H, first, frames: {k: {name: [x_px, y_px], ...}}}` (k = job frame) for the film recipe.
 """
+import os as _o, sys as _s; _s.path.insert(0, _o.path.dirname(_o.path.abspath(__file__))); import _mkpy  # noqa: E401,E702,F401  (bon Python + PATH)
 import sys, os, json, math
 import numpy as np
 

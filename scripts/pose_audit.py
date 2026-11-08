@@ -13,6 +13,7 @@ Usage: python3 pose_audit.py job.json [--fps 30] [--min-speed 15] [--min-hold 0.
 --first-frame: film frame of job frame 1 (to print film frames / times). Exit code 1 when a frozen stretch or a snap
 is found. Multi-object jobs ("poses") are audited object by object.
 """
+import os as _o, sys as _s; _s.path.insert(0, _o.path.dirname(_o.path.abspath(__file__))); import _mkpy  # noqa: E401,E702,F401  (bon Python + PATH)
 import sys, os, json, math
 ALLOW = []
 

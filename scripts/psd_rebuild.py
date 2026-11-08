@@ -15,6 +15,7 @@ Usage: python3 psd_rebuild.py analysis/psd out.html --fonts assets/fonts [--scal
 - --grain amount: adds the film grain of the flattened poster (a top layer often holds a noise filter).
 - every element gets id="L<index>" and class "psd-layer", so the film animates the SAME elements (no re-layout).
 """
+import os as _o, sys as _s; _s.path.insert(0, _o.path.dirname(_o.path.abspath(__file__))); import _mkpy  # noqa: E401,E702,F401  (bon Python + PATH)
 import sys, os, json, html
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))

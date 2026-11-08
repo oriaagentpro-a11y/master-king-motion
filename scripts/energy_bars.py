@@ -6,6 +6,7 @@ Usage: python3 energy_bars.py out/compare/reference_recalee.mp4 out/film_silent.
 --holes: also list frames whose energy drops to ~0 between two moving frames in each video: in the REFERENCE they
 mean duplicated frames (25 -> 30 i/s conversion, rule 52) or a replay problem; in the NEW video, a stall to fix.
 """
+import os as _o, sys as _s; _s.path.insert(0, _o.path.dirname(_o.path.abspath(__file__))); import _mkpy  # noqa: E401,E702,F401  (bon Python + PATH)
 import sys, os
 import numpy as np
 

@@ -10,6 +10,7 @@ Usage: python3 frame_pairs.py timing.json new.mp4 out.png f1 f2 ... [--ref-repla
 - --stills dir: take the new frame from dir/fNNNNN.png (render_film.py --stills) instead of new.mp4.
 Each row is labelled with the new frame, the reference frame and the scene id.
 """
+import os as _o, sys as _s; _s.path.insert(0, _o.path.dirname(_o.path.abspath(__file__))); import _mkpy  # noqa: E401,E702,F401  (bon Python + PATH)
 import sys, os, json
 import cv2
 from PIL import Image, ImageDraw

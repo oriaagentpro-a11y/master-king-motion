@@ -12,6 +12,7 @@ Creates:
   project/film.html       the film skeleton, already wired to the engine
   project/out/            renders, reports, final video
 """
+import os as _o, sys as _s; _s.path.insert(0, _o.path.dirname(_o.path.abspath(__file__))); import _mkpy  # noqa: E401,E702,F401  (bon Python + PATH)
 import sys, os, json, shutil
 
 HERE = os.path.dirname(os.path.abspath(__file__))

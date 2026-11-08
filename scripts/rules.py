@@ -8,6 +8,7 @@ Usage:
 Claude picks the topics ITSELF from what the job contains (see references/essentials.md, "Déclencheurs"):
 a phone or 3D object in the reference -> 3d ; a voice file -> voix ; a PSD -> visuels ; Studio mode -> studio, etc.
 """
+import os as _o, sys as _s; _s.path.insert(0, _o.path.dirname(_o.path.abspath(__file__))); import _mkpy  # noqa: E401,E702,F401  (bon Python + PATH)
 import os, re, sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -30,6 +31,7 @@ TOPICS = {   # topic: (trigger words, rule numbers)
     'code':       ('pièges JavaScript / GSAP / recettes', [13, 16, 48, 58, 77]),
     'fusion':     ('plusieurs vidéos de référence', [19, 85]),
     'lien':       ('référence donnée par un lien', [81]),
+    'installation': ('installation, outil introuvable, mauvais Python', [118, 120]),
     'studio':     ('mode Studio : décalque au pixel près', [90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 104, 105, 108]),
 }
 

@@ -8,6 +8,14 @@ import os from 'node:os';
 import { PNG } from 'pngjs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
+// Tools installed during this session (winget / Chocolatey / Homebrew) are not yet on an open terminal's PATH.
+{
+  const extra = process.platform === 'win32'
+    ? [path.join(process.env.LOCALAPPDATA || '', 'Microsoft', 'WinGet', 'Links'), 'C:\\ProgramData\\chocolatey\\bin']
+    : ['/opt/homebrew/bin', '/usr/local/bin'];
+  const cur = (process.env.PATH || '').split(path.delimiter);
+  process.env.PATH = [...extra.filter(d => existsSync(d) && !cur.includes(d)), ...cur].join(path.delimiter);
+}
 
 const args = process.argv.slice(2);
 const opt = (k, d) => { const i = args.indexOf('--' + k); return i >= 0 ? args[i + 1] : d; };

@@ -9,6 +9,7 @@ Sortie : un SVG autonome (viewBox = taille du canevas) que le film pose sur les 
 C'est une RECONSTRUCTION vectorielle (couleurs et formes modifiables, aucune image bitmap copiée) ; pour l'adaptation, le
 contenu de l'utilisateur remplace ce SVG sur les mêmes coins.
 """
+import os as _o, sys as _s; _s.path.insert(0, _o.path.dirname(_o.path.abspath(__file__))); import _mkpy  # noqa: E401,E702,F401  (bon Python + PATH)
 import sys
 import numpy as np
 import cv2

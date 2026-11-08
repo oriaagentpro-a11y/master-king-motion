@@ -2,6 +2,7 @@
 
 Usage: python3 globe_js.py <fit_dir> <out.js> [--tex-width 4096]
 """
+import os as _o, sys as _s; _s.path.insert(0, _o.path.dirname(_o.path.abspath(__file__))); import _mkpy  # noqa: E401,E702,F401  (bon Python + PATH)
 import sys, os, json, base64
 import cv2
 

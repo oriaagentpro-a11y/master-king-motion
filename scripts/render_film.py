@@ -8,6 +8,7 @@ Usage: python3 render_film.py <film.html> <out.mp4> --timing timing.json [--work
 - --stills dir --frames 12,48,96 : only screenshots of those frames (new timeline), for the storyboard.
 Size and frame rate come from timing.json (stage), never from constants.
 """
+import os as _o, sys as _s; _s.path.insert(0, _o.path.dirname(_o.path.abspath(__file__))); import _mkpy  # noqa: E401,E702,F401  (bon Python + PATH)
 import sys, os, json, subprocess, tempfile, shutil
 from concurrent.futures import ThreadPoolExecutor
 

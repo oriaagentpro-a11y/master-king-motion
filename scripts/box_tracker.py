@@ -16,6 +16,7 @@ Output: {"fps": 25, "tracks": {id: {frame: [x, y, w, h] | null}}, "merged": {id:
 The film replays the boxes (engine/mk-boxreplay.js): the copy follows the original box for box; an
 adaptation puts the user's element on the SAME track (same frame, same size, same reveal).
 """
+import os as _o, sys as _s; _s.path.insert(0, _o.path.dirname(_o.path.abspath(__file__))); import _mkpy  # noqa: E401,E702,F401  (bon Python + PATH)
 import sys, json
 import cv2
 import numpy as np

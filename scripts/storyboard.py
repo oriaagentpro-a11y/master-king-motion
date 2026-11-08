@@ -8,6 +8,7 @@ Writes out_dir/storyboard.png (one row per scene, with timing, voice-over text a
 out_dir/storyboard.md (the same as a table, to paste in the conversation). Only a few stills are rendered:
 it takes seconds, the full render comes after the user's "OK".
 """
+import os as _o, sys as _s; _s.path.insert(0, _o.path.dirname(_o.path.abspath(__file__))); import _mkpy  # noqa: E401,E702,F401  (bon Python + PATH)
 import sys, os, json
 from PIL import Image, ImageDraw, ImageFont
 

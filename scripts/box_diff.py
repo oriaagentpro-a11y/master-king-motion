@@ -5,6 +5,7 @@ For each frame (index in the original), prints the components found in both vide
 side by side, with the x / y / width / height error of the copy. Used by the correction loop
 to turn a visual difference into a number to fix (offset, scale, font size).
 """
+import os as _o, sys as _s; _s.path.insert(0, _o.path.dirname(_o.path.abspath(__file__))); import _mkpy  # noqa: E401,E702,F401  (bon Python + PATH)
 import sys
 import numpy as np
 import cv2

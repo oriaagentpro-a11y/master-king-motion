@@ -4,6 +4,7 @@ Every script imports this module, so nothing depends on one machine's paths:
 - the browser comes from $CHROME_PATH, else Playwright's own Chromium, else a system Chrome / Chromium / Edge;
 - the frame rate and the frame size come from the source video (ffprobe), never from constants.
 """
+import os as _o, sys as _s; _s.path.insert(0, _o.path.dirname(_o.path.abspath(__file__))); import _mkpy  # noqa: E401,E702,F401  (bon Python + PATH)
 import os, sys, json, glob, shutil, subprocess, urllib.parse, pathlib
 
 BROWSER_ARGS = ['--force-color-profile=srgb', '--disable-lcd-text', '--font-render-hinting=none', '--allow-file-access-from-files', '--ignore-gpu-blocklist', '--use-angle=swiftshader', '--enable-unsafe-swiftshader']

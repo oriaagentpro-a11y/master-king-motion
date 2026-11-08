@@ -12,6 +12,7 @@ Usage: python3 finalize.py <silent.mp4> <final.mp4> [--music m.mp3] [--voice v.w
 - video: H.264 High, CRF --crf (16 = visually lossless), preset slow, yuv420p, BT.709 tags, +faststart
   (or --copy-video to keep the rendered stream).
 """
+import os as _o, sys as _s; _s.path.insert(0, _o.path.dirname(_o.path.abspath(__file__))); import _mkpy  # noqa: E401,E702,F401  (bon Python + PATH)
 import sys, os, json, subprocess
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))

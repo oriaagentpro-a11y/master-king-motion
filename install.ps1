@@ -11,24 +11,54 @@ function Refresh-Path { $env:Path = [Environment]::GetEnvironmentVariable("Path"
 Step "Outils système"
 $tools = @(
   @{ cmd = "node";   id = "OpenJS.NodeJS.LTS" },
-  @{ cmd = "python"; id = "Python.Python.3.12" },
   @{ cmd = "ffmpeg"; id = "Gyan.FFmpeg" },
   @{ cmd = "git";    id = "Git.Git" }
 )
 foreach ($t in $tools) {
   $ok = Get-Command $t.cmd -ErrorAction SilentlyContinue
-  if ($t.cmd -eq "python" -and $ok) { & python -c "import sys; sys.exit(sys.version_info < (3, 9))" 2>$null; $ok = ($LASTEXITCODE -eq 0) }
   if (-not $ok) {
     Write-Host "installation de $($t.id)"
     if (Get-Command winget -ErrorAction SilentlyContinue) {
       winget install --id $t.id -e --silent --accept-package-agreements --accept-source-agreements
     } elseif (Get-Command choco -ErrorAction SilentlyContinue) {
-      $choco = @{ "node" = "nodejs-lts"; "python" = "python312"; "ffmpeg" = "ffmpeg"; "git" = "git" }[$t.cmd]
+      $choco = @{ "node" = "nodejs-lts"; "ffmpeg" = "ffmpeg"; "git" = "git" }[$t.cmd]
       choco install -y --no-progress $choco
     } else { Write-Host "winget est absent : installez 'App Installer' depuis le Microsoft Store, puis relancez."; exit 1 }
     Refresh-Path
   }
 }
+
+Step "Python 3.9 à 3.13 (les modules de calcul n'existent pas encore pour les versions plus récentes)"
+function Find-Py {
+  $ErrorActionPreference = "Continue"   # py -3.x absent écrit sur stderr : ne pas en faire une erreur fatale
+  $rec = "$Here\.python"
+  $cands = @()
+  if (Test-Path $rec) { $cands += (Get-Content $rec -Raw).Trim() }
+  foreach ($v in "3.12", "3.11", "3.13", "3.10") {
+    if (Get-Command py -ErrorAction SilentlyContinue) { $p = (& py "-$v" -c "import sys; print(sys.executable)" 2>$null); if ($LASTEXITCODE -eq 0 -and $p) { $cands += $p.Trim() } }
+    $cands += "$env:LOCALAPPDATA\Programs\Python\Python$($v.Replace('.',''))\python.exe"
+  }
+  $g = Get-Command python -ErrorAction SilentlyContinue; if ($g) { $cands += $g.Source }
+  foreach ($c in $cands) {
+    if ($c -and (Test-Path $c)) {
+      & $c -c "import sys; sys.exit(not ((3, 9) <= sys.version_info[:2] <= (3, 13)))" 2>$null
+      if ($LASTEXITCODE -eq 0) { return $c }
+    }
+  }
+  return $null
+}
+$Py = Find-Py
+if (-not $Py) {
+  Write-Host "installation de Python 3.12"
+  if (Get-Command winget -ErrorAction SilentlyContinue) {
+    winget install --id Python.Python.3.12 -e --silent --accept-package-agreements --accept-source-agreements
+  } elseif (Get-Command choco -ErrorAction SilentlyContinue) { choco install -y --no-progress python312 }
+  else { Write-Host "winget est absent : installez 'App Installer' depuis le Microsoft Store, puis relancez."; exit 1 }
+  Refresh-Path; $Py = Find-Py
+  if (-not $Py) { Write-Host "Python 3.9-3.13 introuvable après installation"; exit 1 }
+}
+Set-Content -Path "$Here\.python" -Value $Py -NoNewline   # chaque script se relance avec ce Python (scripts\_mkpy.py)
+Write-Host "Python : $Py"
 
 Step "Moteur de rendu (Node : GSAP, Three.js, Playwright)"
 Push-Location "$Here\engine"; npm install --no-audit --no-fund
@@ -36,10 +66,10 @@ Step "Chromium (rendu et mesures)"
 npx --yes playwright install chromium; Pop-Location
 
 Step "Outils d'analyse (Python)"
-python -m pip install -q -r "$Here\requirements.txt"
+& $Py -m pip install -q -r "$Here\requirements.txt"
 
 Step "Modèle de transcription de la voix"
-python -c "import os; from faster_whisper import WhisperModel; WhisperModel(os.environ.get('MK_WHISPER','small'), device='cpu', compute_type='int8'); print('modèle prêt')"
+& $Py -c "import os; from faster_whisper import WhisperModel; WhisperModel(os.environ.get('MK_WHISPER','small'), device='cpu', compute_type='int8'); print('modèle prêt')"
 
 Step "Polices libres courantes (≈ 30 familles : Inter, Poppins, Montserrat…)"
 $Fonts = Join-Path $HOME ".cache\reverse-motion\google-fonts"
@@ -64,5 +94,5 @@ if (-not (Test-Path "$App\blender.exe")) {
 & "$App\blender.exe" --version | Select-Object -First 1
 
 Step "Diagnostic"
-python "$Here\scripts\doctor.py"
+& $Py "$Here\scripts\doctor.py"
 if ($LASTEXITCODE -eq 0) { (Get-Date).ToUniversalTime().ToString("s") | Out-File "$Here\.installed" }

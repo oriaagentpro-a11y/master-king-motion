@@ -18,6 +18,7 @@ Pose segments are in REFERENCE frames (fractional frames interpolate linearly). 
 max(first measured start + i * stagger, the spoken word), converted to new time; its measured moves then play in REAL
 time (rule 11: a gesture is never slowed by the stretch of a hold).
 """
+import os as _o, sys as _s; _s.path.insert(0, _o.path.dirname(_o.path.abspath(__file__))); import _mkpy  # noqa: E401,E702,F401  (bon Python + PATH)
 import sys, os, json, math
 import numpy as np
 

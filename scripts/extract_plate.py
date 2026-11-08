@@ -23,6 +23,7 @@ holes.json: [{"t0": 2.6, "t1": 3.0, "rect": [x, y, w, h]}, ...] areas holding re
 --snap S:   alpha below S becomes 0 and above 1-S becomes 1 (removes compression noise on flats).
 Output: a JS file  window.PLATES = window.PLATES || {}; window.PLATES[name] = {a, b, w, h, frames: {frame: dataURL}}
 """
+import os as _o, sys as _s; _s.path.insert(0, _o.path.dirname(_o.path.abspath(__file__))); import _mkpy  # noqa: E401,E702,F401  (bon Python + PATH)
 import sys, json, base64
 import numpy as np
 import cv2

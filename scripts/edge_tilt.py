@@ -8,6 +8,7 @@ Usage: python3 edge_tilt.py ref.mp4 f0 f1 [--dark 130] [--region x0,y0,x1,y1] [-
 minAreaRect is NOT used: on a blurred, rounded body it snaps to 0 deg (measured: it returned 0 where the bottom
 edge gave +6.7 deg). An eye reading gave -12 deg (WRONG sign) where this tool gave +6.7 deg (rule 56).
 """
+import os as _o, sys as _s; _s.path.insert(0, _o.path.dirname(_o.path.abspath(__file__))); import _mkpy  # noqa: E401,E702,F401  (bon Python + PATH)
 import sys, os, math
 import numpy as np
 import cv2

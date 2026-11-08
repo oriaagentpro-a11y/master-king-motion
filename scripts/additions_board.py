@@ -14,6 +14,7 @@ spec.json: {"scenes": [{"id": "P3", "frame": 280, "title": "...", "caption": "..
                       {"type": "box", "xy": [0.1, 0.1], "wh": [0.2, 0.1], "color": "#FFCC00", "label": "..."}]}]}
 Coordinates are normalised to the frame (0-1). Mock-ups show WHERE and WHAT; the motion is described in the caption.
 """
+import os as _o, sys as _s; _s.path.insert(0, _o.path.dirname(_o.path.abspath(__file__))); import _mkpy  # noqa: E401,E702,F401  (bon Python + PATH)
 import sys, os, json, textwrap
 import cv2
 from PIL import Image, ImageDraw, ImageFont

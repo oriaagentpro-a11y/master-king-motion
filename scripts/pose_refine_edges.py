@@ -14,6 +14,7 @@ gridded zoom of the first frame, noted as « œil »); rotations and focal (--fo
 --roi: only edges inside it count (e.g. the inset panel of a shot) ; --debug writes overlays every 5 frames.
 Geometry = blender/phone_build.py proportions (screen inset 2.05 mm, corner 10.6 mm, island 19 x 5.6 mm).
 """
+import os as _o, sys as _s; _s.path.insert(0, _o.path.dirname(_o.path.abspath(__file__))); import _mkpy  # noqa: E401,E702,F401  (bon Python + PATH)
 import sys, os, json
 import numpy as np
 import cv2

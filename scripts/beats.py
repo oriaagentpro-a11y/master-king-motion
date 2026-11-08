@@ -7,6 +7,7 @@ Use it to check that every cut and every element entrance of the copy lands on t
 original (an entrance that is one frame late on an accent is visible), and, for a rebranded version with new
 music, to snap the GSAP start times onto the new accents.
 """
+import os as _o, sys as _s; _s.path.insert(0, _o.path.dirname(_o.path.abspath(__file__))); import _mkpy  # noqa: E401,E702,F401  (bon Python + PATH)
 import sys, os, json, subprocess, tempfile
 import numpy as np
 

@@ -16,6 +16,7 @@ Writes out_dir/style_report.json (per scene, values, thresholds, verdict, the fr
 out_dir/style_curves.png and out_dir/side_by_side.mp4 (reference at the warped time | new video).
 A scene is "conforme" only when every test passes. A high score is not a proof: watch the side-by-side.
 """
+import os as _o, sys as _s; _s.path.insert(0, _o.path.dirname(_o.path.abspath(__file__))); import _mkpy  # noqa: E401,E702,F401  (bon Python + PATH)
 import sys, os, json, subprocess
 import numpy as np
 import cv2

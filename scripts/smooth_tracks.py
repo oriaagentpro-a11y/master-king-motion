@@ -8,6 +8,7 @@ qui « respire », les positions qui vibrent) en gardant les courbes d'accélér
 Les sauts réels (coupe, fouet) coupent la piste en morceaux (pas > max(4 x --keep, 8 x pas médian)) ; chaque
 morceau est lissé en entier : jamais de valeur brute isolée entre des valeurs lissées (cela crée un cran).
 """
+import os as _o, sys as _s; _s.path.insert(0, _o.path.dirname(_o.path.abspath(__file__))); import _mkpy  # noqa: E401,E702,F401  (bon Python + PATH)
 import sys, os, json, re, shutil
 import numpy as np
 from scipy.signal import savgol_filter

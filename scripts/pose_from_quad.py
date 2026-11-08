@@ -15,6 +15,7 @@ origin looking down -z, y up, phone height 1), Euler order YXZ in degrees. The f
 P.setPose(MK.curveAt(pose, t_ref_abs)). Frames where the screen is hidden (phone seen from the back) are simply
 missing: measure the silhouette there (track_mask) and keep continuity (rotation through 180 deg).
 """
+import os as _o, sys as _s; _s.path.insert(0, _o.path.dirname(_o.path.abspath(__file__))); import _mkpy  # noqa: E401,E702,F401  (bon Python + PATH)
 import sys, os, json
 import numpy as np
 import cv2

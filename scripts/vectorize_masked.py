@@ -8,6 +8,7 @@ Sortie : window.NAME = {"<frame>": "M ... Z M ... Z", ...}  (chemins evenodd en 
 Usage : traits animés, pointillés qui se dessinent, comètes, croix, chevrons, éclats : tout ce qui n'est pas une
 formule simple. Le résultat est du VECTORIEL (recolorable, lueur en filtre SVG), pas une image extraite.
 """
+import os as _o, sys as _s; _s.path.insert(0, _o.path.dirname(_o.path.abspath(__file__))); import _mkpy  # noqa: E401,E702,F401  (bon Python + PATH)
 import sys, json
 import numpy as np
 import cv2

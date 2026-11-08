@@ -4,6 +4,7 @@ Usage: python3 match_font.py <frame.png> <x> <y> <w> <h> <word> <weight> <fonts_
 Crops the word, binarises it, renders the same word in every candidate font
 at the same ink height and scores the overlap (IoU). Prints a ranking as JSON.
 """
+import os as _o, sys as _s; _s.path.insert(0, _o.path.dirname(_o.path.abspath(__file__))); import _mkpy  # noqa: E401,E702,F401  (bon Python + PATH)
 import sys, json, glob, os
 import numpy as np
 import cv2

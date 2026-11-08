@@ -7,6 +7,7 @@ prints and returns the best {id: [dx, dy, blur, ssim_before, ssim_after]}. Thres
 ~0.5-1 px off (anti-aliased edges, pixel index vs pixel centre): apply the corrections in the scene (as a constant
 translate on each element) and re-measure the whole scene with compare.py.
 """
+import os as _o, sys as _s; _s.path.insert(0, _o.path.dirname(_o.path.abspath(__file__))); import _mkpy  # noqa: E401,E702,F401  (bon Python + PATH)
 import sys, json
 import cv2
 import numpy as np

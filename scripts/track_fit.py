@@ -13,6 +13,7 @@ normalised values on its own stage (1920x1080 by default), so the composition is
 Also written: first / last visible frame (appearance, disappearance) and the overshoot of each move.
 The result is merged into out.json under the element id (one file can hold every element of the video).
 """
+import os as _o, sys as _s; _s.path.insert(0, _o.path.dirname(_o.path.abspath(__file__))); import _mkpy  # noqa: E401,E702,F401  (bon Python + PATH)
 import sys, os, json
 import numpy as np
 

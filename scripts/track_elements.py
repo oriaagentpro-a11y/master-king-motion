@@ -5,6 +5,7 @@ For every frame, pixels whose luminance stands out from the background are group
 components; each component's box, centre, area and mean luminance are recorded.
 The output feeds the easing fitter.
 """
+import os as _o, sys as _s; _s.path.insert(0, _o.path.dirname(_o.path.abspath(__file__))); import _mkpy  # noqa: E401,E702,F401  (bon Python + PATH)
 import sys, json
 import numpy as np
 import cv2

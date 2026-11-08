@@ -16,6 +16,7 @@ Element option "ink": {"color": "5000B0", "tol": 110}: compare only the pixels o
 behind the element (code shapes, plate, holes): register in ink mode BEFORE punching plate holes.
 The output file sets window.REG = {frame: {elementId: {dx, dy, s, r}}} (merged with an existing file).
 """
+import os as _o, sys as _s; _s.path.insert(0, _o.path.dirname(_o.path.abspath(__file__))); import _mkpy  # noqa: E401,E702,F401  (bon Python + PATH)
 import sys, os, json, re, urllib.parse
 import numpy as np
 import cv2

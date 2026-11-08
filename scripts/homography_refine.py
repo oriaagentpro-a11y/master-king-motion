@@ -12,6 +12,7 @@ sur les coins. Bien plus stable que les points ORB quand l'écran est flou, somb
 puisque chaque image est recalée sur la MÊME texture. Les sauts résiduels (> --jump px) sont remplacés par interpolation.
 Sortie : même format que homography_track.py (corners).
 """
+import os as _o, sys as _s; _s.path.insert(0, _o.path.dirname(_o.path.abspath(__file__))); import _mkpy  # noqa: E401,E702,F401  (bon Python + PATH)
 import sys, json
 import numpy as np
 import cv2

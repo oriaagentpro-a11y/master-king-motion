@@ -17,6 +17,7 @@ Writes timing.json and timing.js (window.TIMING, read by mkm.js) with, per plan 
 the warp knots [[t_ref_local, t_new_local], ...] (identity on the entrance, shift on the exit; a longer hold is
 stretched linearly, a shorter hold is played at speed 1 and its end skipped — a hold is never sped up), its voice-over phrases, and warnings (voice too dense for the animations, music too short...).
 """
+import os as _o, sys as _s; _s.path.insert(0, _o.path.dirname(_o.path.abspath(__file__))); import _mkpy  # noqa: E401,E702,F401  (bon Python + PATH)
 import sys, os, json
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))

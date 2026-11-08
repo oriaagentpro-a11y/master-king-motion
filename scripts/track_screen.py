@@ -8,6 +8,7 @@ hole of the largest dark component whose shape is a rounded rectangle = the scre
 seen (phone from the back, screen hidden) are left out — measure the silhouette there (track_mask).
 --debug: writes overlays of the found corners every 5 frames to check by eye (rule 5).
 """
+import os as _o, sys as _s; _s.path.insert(0, _o.path.dirname(_o.path.abspath(__file__))); import _mkpy  # noqa: E401,E702,F401  (bon Python + PATH)
 import sys, os, json
 import numpy as np
 import cv2

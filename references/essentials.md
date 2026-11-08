@@ -1,4 +1,4 @@
-# L'essentiel : à lire avant CHAQUE vidéo (à la place des 119 règles)
+# L'essentiel : à lire avant CHAQUE vidéo (à la place des 120 règles)
 
 Ce fichier suffit pour démarrer. Les règles détaillées de `rules.md` se chargent **à la demande**, sujet par sujet,
 avec `python3 scripts/rules.py <sujet>`, quand un déclencheur ci-dessous apparaît. Claude choisit lui-même le mode et les

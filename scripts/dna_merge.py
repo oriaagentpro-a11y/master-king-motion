@@ -6,6 +6,7 @@ prefixed too ("A_title") unless they already start with the prefix. Typography /
 reference under "refs". plan.json then names scenes "A_S01", "C_S04" and retime / storyboard / style_compare use
 the right video for each scene.
 """
+import os as _o, sys as _s; _s.path.insert(0, _o.path.dirname(_o.path.abspath(__file__))); import _mkpy  # noqa: E401,E702,F401  (bon Python + PATH)
 import sys, os, json
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import mkcommon as mk  # noqa: E402

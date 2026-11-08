@@ -5,6 +5,7 @@ Usage: python3 general_storyboard.py film.mp4 timing.json spec.json out.png [--f
 spec.json: {"title": "MTN MoMo — 18 s", "scenes": {"P1": {"name": "Ouverture", "shots": [[frame, "texte"], ...]}, ...}}
 The voice line comes from timing.json (scene vo text). Frames are taken from the RENDERED film (what will be delivered).
 """
+import os as _o, sys as _s; _s.path.insert(0, _o.path.dirname(_o.path.abspath(__file__))); import _mkpy  # noqa: E401,E702,F401  (bon Python + PATH)
 import sys, os, json, textwrap
 import cv2
 from PIL import Image, ImageDraw, ImageFont

@@ -6,6 +6,7 @@ components gives [left, top, width, height] for the frame (missing when nothing 
 The scene replays it with RM.fitInk(el, {left, top, w}) at every frame.
 The result is merged into out.json under `key` (so one file can hold several texts).
 """
+import os as _o, sys as _s; _s.path.insert(0, _o.path.dirname(_o.path.abspath(__file__))); import _mkpy  # noqa: E401,E702,F401  (bon Python + PATH)
 import sys, os, json
 import numpy as np
 import cv2

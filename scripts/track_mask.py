@@ -7,6 +7,7 @@ form the mask; the union box of components >= --min-area (or only the largest wi
 [left, top, width, height], the same format as track_textbox.py, so track_fit.py reads it with --key.
 Also stored: the mask area (key + "_area") — a proxy for scale when the object turns (width alone lies).
 """
+import os as _o, sys as _s; _s.path.insert(0, _o.path.dirname(_o.path.abspath(__file__))); import _mkpy  # noqa: E401,E702,F401  (bon Python + PATH)
 import sys, os, json
 import numpy as np
 import cv2

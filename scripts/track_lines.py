@@ -7,6 +7,7 @@ Output merged into out.json[key] = {frame: {"v": [x...], "h": [y...]}}. Then, pe
 fitting: python3 track_lines.py ... --fit ref.mp4 tracks.json --id grille   (fits each line's position over time,
 matching lines frame to frame by nearest position).
 """
+import os as _o, sys as _s; _s.path.insert(0, _o.path.dirname(_o.path.abspath(__file__))); import _mkpy  # noqa: E401,E702,F401  (bon Python + PATH)
 import sys, os, json
 import numpy as np
 import cv2

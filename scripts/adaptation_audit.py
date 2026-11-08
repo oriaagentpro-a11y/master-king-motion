@@ -11,6 +11,7 @@ Sortie : audit.json (par image + plages signalées) et planche contact (décalqu
 et d'une image toutes les --every. Les seuils sont relatifs : un texte plus long ou plus court reste « normal » ;
 une scène vide, un élément resté menthe ou un texte en double ressortent.
 """
+import os as _o, sys as _s; _s.path.insert(0, _o.path.dirname(_o.path.abspath(__file__))); import _mkpy  # noqa: E401,E702,F401  (bon Python + PATH)
 import sys, json, os
 import numpy as np
 import cv2

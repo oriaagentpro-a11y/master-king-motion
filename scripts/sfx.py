@@ -6,6 +6,7 @@ cues.json = [{"t": 2.40, "type": "whoosh", "dur": 0.45, "gain": 0.8, "pan": -0.3
 Only add SFX when the reference has them, or when the user asks: the music and the voice come first.
 Times are in the NEW video. The file is 48 kHz stereo, exactly --duration long; finalize.py mixes it.
 """
+import os as _o, sys as _s; _s.path.insert(0, _o.path.dirname(_o.path.abspath(__file__))); import _mkpy  # noqa: E401,E702,F401  (bon Python + PATH)
 import sys, os, json, wave
 import numpy as np
 

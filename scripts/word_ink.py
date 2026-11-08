@@ -10,6 +10,7 @@ Read: a new word that appears LOWER (y0 larger) and PALE (low contrast) then rea
 (sat 40+ against ~15) is the accent colour; a word whose letters change shape frame to frame = scramble.
 Then fit the series with fit_easing.py and write the values with their source in notes.json.
 """
+import os as _o, sys as _s; _s.path.insert(0, _o.path.dirname(_o.path.abspath(__file__))); import _mkpy  # noqa: E401,E702,F401  (bon Python + PATH)
 import sys, os, json
 import numpy as np
 import cv2

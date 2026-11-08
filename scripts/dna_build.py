@@ -18,6 +18,7 @@ For each scene the DNA computes its phases from the measured moves: in_end (end 
 and out_start (start of the first exit move). retime.py stretches only the hold between them, so every
 measured animation keeps its exact speed in the new video.
 """
+import os as _o, sys as _s; _s.path.insert(0, _o.path.dirname(_o.path.abspath(__file__))); import _mkpy  # noqa: E401,E702,F401  (bon Python + PATH)
 import sys, os, json
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))

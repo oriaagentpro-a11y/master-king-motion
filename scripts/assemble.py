@@ -11,6 +11,7 @@ With --brand: every scene is rendered with the brand file (colours, texts), extr
 recoloured with the same palette (recolor.py), and the report checks the RHYTHM against the original
 (rhythm.py: every movement on the same frame) instead of pixel similarity.
 """
+import os as _o, sys as _s; _s.path.insert(0, _o.path.dirname(_o.path.abspath(__file__))); import _mkpy  # noqa: E401,E702,F401  (bon Python + PATH)
 import sys, os, json, subprocess
 import numpy as np
 import cv2
