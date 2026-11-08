@@ -107,7 +107,8 @@ Seuils : rythme ≥ 0,70, événements ≥ 0,75, attaque ≤ 1 image, énergie e
 
 ## 3D photoréaliste (Blender Cycles)
 ```
-bash $MK/blender/install_blender.sh                       # une fois (Blender 4.2 LTS portable dans blender/app)
+python3 $MK/scripts/ensure_ready.py                         # automatique : Blender 4.2 LTS dans blender/app, carte graphique auto
+python3 $MK/scripts/render_estimate.py analysis/p3_job.json  # durée annoncée à l'utilisateur AVANT le rendu
 # pose mesurée sur la référence
 python3 $MK/scripts/track_screen.py ref/A.mp4 323 344 analysis/A/screen_quad.json --dark 105 --debug analysis/A/dbg
 python3 $MK/scripts/pose_from_quad.py analysis/A/screen_quad.json ref/A.mp4 analysis/A/pose3d.json --fov auto --id wide

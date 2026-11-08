@@ -7,14 +7,33 @@ Claude mesure l'ADN de la référence (rythme, courbes d'animation, durées, tra
 
 > Tout est recréé en code (HTML / SVG / GSAP / Three.js / Blender). Aucun élément n'est extrait de la vidéo de référence.
 
+<p align="center"><img src="docs/demo.gif" alt="Extrait d'une vidéo produite avec Master King Motion (lancement Master Skills)" width="720"></p>
+<p align="center"><em>Extrait du lancement « Master Skills », produit avec ce skill.</em></p>
+
+> ⚠️ **Fonctionne avec Claude Code** (terminal, application de bureau ou claude.ai/code). Le skill exécute des programmes
+> et installe Blender : il ne fonctionne pas dans la simple discussion claude.ai ni dans l'application mobile.
+
 ---
 
 ## ✨ Ce que fait le skill
 
+### Deux modes, choisis automatiquement par Claude
+
+| Mode | Quand | Résultat |
+|---|---|---|
+| ⚡ **Rapide** (par défaut) | « Fais la même vidéo pour ma marque » | Le mouvement de la référence est mesuré (coupes, durées, courbes, rythme) puis appliqué à votre contenu. Rapide et économe en usage. |
+| 🎯 **Studio** | Vous demandez une copie exacte (« identique », « au pixel près »), ou une scène résiste aux contrôles | La référence est d'abord reproduite au pixel près (95 % de ressemblance mesurée par scène), puis adaptée. Plus long. |
+
+Vous n'avez rien à choisir : Claude annonce le mode en une phrase. Il passe une scène en Studio de lui-même si les
+contrôles de rythme ou de style échouent deux fois, et il charge seul les règles expertes utiles (3D, voix, textes…)
+au moment où elles servent.
+
+### Les étapes
+
 | Étape | Ce qui se passe |
 |---|---|
-| **1. Décalque** | La référence est reproduite image par image en code, avec un SSIM ≥ 0,98 visé par scène et zéro texte fantôme. |
-| **2. Dissection** | Coupes, scènes, palette, énergie de mouvement, courbes d'easing GSAP, tempo, flou de mouvement, grain. |
+| **1. Mesure** | Coupes, scènes, palette, énergie de mouvement, courbes d'easing GSAP, tempo, flou de mouvement, grain. En mode Studio : reproduction image par image en code d'abord. |
+| **2. Plan** | Chaque scène de la référence reçoit votre contenu, avec votre palette et vos polices. |
 | **3. Script de voix** | Un script écrit plan par plan sur le rythme de la référence, à générer dans votre outil de voix. |
 | **4. Storyboard** | Une image par scène en rendu réel, pour validation avant le rendu final. |
 | **5. Adaptation** | Vos textes, couleurs et visuels sur les pistes de mouvement mesurées. La voix est calée mot par mot, la musique mixée sous la voix. |
@@ -24,7 +43,7 @@ Claude mesure l'ADN de la référence (rythme, courbes d'animation, durées, tra
 - **72 scripts Python** de mesure et de vérification : suivi d'éléments, homographies, ajustement d'easing, audit, lissage, rythme.
 - **Un moteur de rendu** Chromium + GSAP + Three.js, image par image, avec flou de mouvement.
 - **De la 3D photoréaliste dans Blender Cycles** : smartphone modélisé, icônes, objets, composités sur fond transparent.
-- **118 règles d'or** apprises sur des projets réels (`references/rules.md`).
+- **119 règles d'or** apprises sur des projets réels (`references/rules.md`).
 
 ---
 
@@ -80,7 +99,13 @@ Claude suit les 7 phases décrites dans `SKILL.md`. Il vous rend un storyboard �
 
 **Formats :** 16:9 (1920×1080) par défaut. Précisez *vertical / TikTok / Reels* pour du 9:16, *carré* pour du 1:1, *post Instagram* pour du 4:5.
 
-**Audio :** vous fournissez la musique et la voix off. Si elles manquent, Claude vous propose un script de voix minuté et une direction musicale.
+**Audio :** vous fournissez la musique et la voix off. Si elles manquent, Claude vous propose un script de voix minuté
+(une ligne par plan) et une direction musicale. Pour la voix : votre propre enregistrement (même au téléphone), ou un
+outil de synthèse vocale gratuit et open source comme Piper ou Kokoro. Le pack Master Skills inclut aussi un outil de voix off.
+
+**Durée :** avant chaque long rendu (3D Blender, Full HD), Claude mesure une image et vous annonce la durée totale.
+La 3D utilise automatiquement votre carte graphique si vous en avez une (NVIDIA, AMD, Apple Silicon).
+Prévoyez environ 3 Go d'espace disque pour l'installation.
 
 ---
 
@@ -91,7 +116,8 @@ master-king-motion/
 ├── SKILL.md            ← le skill : 7 phases, pipeline, règles absolues
 ├── install.sh / .ps1   ← installation complète automatique (Blender compris)
 ├── references/
-│   ├── rules.md        ← 118 règles d'or (à lire avant chaque vidéo)
+│   ├── essentials.md   ← l'essentiel lu avant chaque vidéo : modes, déclencheurs
+│   ├── rules.md        ← 119 règles d'or, chargées sujet par sujet (scripts/rules.py)
 │   ├── workflow.md     ← les commandes de chaque phase
 │   ├── doctrine.md     ← les règles de qualité
 │   ├── verification.md ← la passe image par image avant livraison

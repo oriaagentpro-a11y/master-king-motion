@@ -37,6 +37,9 @@ for pkg in ['playwright', 'gsap', 'pngjs', 'd3-geo', 'topojson-client', 'world-a
     line(os.path.isdir(os.path.join(nm, pkg)), f'module Node {pkg}', f'cd {os.path.join(ROOT, "engine")} && npm install')
 exe = rmcommon.chrome_path()
 line(exe is not None, f'Chromium ({exe or "introuvable"})', 'cd engine && npx playwright install chromium   (ou CHROME_PATH=...)')
+fd = os.path.join(os.path.expanduser('~'), '.cache', 'reverse-motion', 'google-fonts', 'ofl')
+nf = len(os.listdir(fd)) if os.path.isdir(fd) else 0
+line(nf >= 10, f'polices libres candidates ({nf} familles)', f'bash {os.path.join(HERE, "get_fonts.sh")} --essentials')
 bl = next((b for b in [os.environ.get('BLENDER'), os.path.join(ROOT, 'blender', 'app', 'blender.exe'),
                        os.path.join(ROOT, 'blender', 'app', 'blender')] if b and os.path.exists(b)), None)
 bv = ''

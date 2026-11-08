@@ -25,6 +25,30 @@ bpy.ops.wm.read_factory_settings(use_empty=True)
 sc = bpy.context.scene
 sc.render.engine = 'CYCLES'
 sc.cycles.device = 'CPU'
+# GPU automatically when one is present (OptiX / CUDA / HIP / Metal / oneAPI): 5-10x faster than the CPU.
+# MK_DEVICE=CPU forces the processor; MK_DEVICE=OPTIX (etc.) forces one backend.
+def _use_gpu():
+    want = os.environ.get('MK_DEVICE', 'AUTO').upper()
+    if want == 'CPU':
+        return 'CPU'
+    try:
+        prefs = bpy.context.preferences.addons['cycles'].preferences
+    except Exception:
+        return 'CPU'
+    for kind in ([want] if want != 'AUTO' else ['OPTIX', 'CUDA', 'HIP', 'METAL', 'ONEAPI']):
+        try:
+            prefs.compute_device_type = kind
+            prefs.get_devices()
+            devs = [d for d in prefs.devices if d.type == kind]
+            if devs:
+                for d in prefs.devices:
+                    d.use = d.type in (kind, 'CPU') if kind == 'METAL' else d.type == kind
+                sc.cycles.device = 'GPU'
+                return kind + ' (' + ', '.join(d.name for d in devs) + ')'
+        except Exception:
+            continue
+    return 'CPU'
+print('MKM_DEVICE', _use_gpu())
 sc.cycles.samples = J.get('samples', 96); sc.cycles.use_adaptive_sampling = True; sc.cycles.adaptive_threshold = 0.02
 sc.cycles.use_denoising = True
 try:

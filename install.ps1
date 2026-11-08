@@ -19,9 +19,13 @@ foreach ($t in $tools) {
   $ok = Get-Command $t.cmd -ErrorAction SilentlyContinue
   if ($t.cmd -eq "python" -and $ok) { & python -c "import sys; sys.exit(sys.version_info < (3, 9))" 2>$null; $ok = ($LASTEXITCODE -eq 0) }
   if (-not $ok) {
-    if (-not (Get-Command winget -ErrorAction SilentlyContinue)) { Write-Host "winget est absent : installez 'App Installer' depuis le Microsoft Store, puis relancez."; exit 1 }
     Write-Host "installation de $($t.id)"
-    winget install --id $t.id -e --silent --accept-package-agreements --accept-source-agreements
+    if (Get-Command winget -ErrorAction SilentlyContinue) {
+      winget install --id $t.id -e --silent --accept-package-agreements --accept-source-agreements
+    } elseif (Get-Command choco -ErrorAction SilentlyContinue) {
+      $choco = @{ "node" = "nodejs-lts"; "python" = "python312"; "ffmpeg" = "ffmpeg"; "git" = "git" }[$t.cmd]
+      choco install -y --no-progress $choco
+    } else { Write-Host "winget est absent : installez 'App Installer' depuis le Microsoft Store, puis relancez."; exit 1 }
     Refresh-Path
   }
 }
@@ -36,6 +40,14 @@ python -m pip install -q -r "$Here\requirements.txt"
 
 Step "Modèle de transcription de la voix"
 python -c "import os; from faster_whisper import WhisperModel; WhisperModel(os.environ.get('MK_WHISPER','small'), device='cpu', compute_type='int8'); print('modèle prêt')"
+
+Step "Polices libres courantes (≈ 30 familles : Inter, Poppins, Montserrat…)"
+$Fonts = Join-Path $HOME ".cache\reverse-motion\google-fonts"
+$Fams = "inter poppins montserrat roboto opensans lato oswald raleway playfairdisplay dmsans spacegrotesk manrope plusjakartasans sora bebasneue anton archivo worksans rubik nunito urbanist outfit syne unbounded lexend barlow figtree onest instrumentsans dmserifdisplay".Split(" ") | ForEach-Object { "ofl/$_" }
+try {
+  if (-not (Test-Path "$Fonts\.git")) { git clone -q --depth 1 --filter=blob:none --sparse https://github.com/google/fonts.git $Fonts }
+  Push-Location $Fonts; git sparse-checkout set @Fams; Pop-Location
+} catch { Write-Host "(polices non téléchargées : elles le seront au prochain lancement)" }
 
 Step "Blender 4.2 LTS (3D photoréaliste, Cycles)"
 $App = "$Here\blender\app"

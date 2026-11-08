@@ -57,8 +57,8 @@ if [[ "${1:-}" != "--check" ]]; then
   step "Chromium (rendu et mesures)"
   if [[ -z "${CHROME_PATH:-}" ]]; then
     if [[ "$OS" == "Linux" && ( -z "$SUDO" || "$(id -u)" == "0" || -n "$(sudo -n true 2>/dev/null && echo y)" ) ]]; then
-      (cd "$HERE/engine" && $SUDO npx --yes playwright install --with-deps chromium) \
-        || (cd "$HERE/engine" && npx --yes playwright install chromium)
+      (cd "$HERE/engine" && $SUDO env "PATH=$PATH" npx --yes playwright install-deps chromium) || true
+      (cd "$HERE/engine" && npx --yes playwright install chromium)
     else
       (cd "$HERE/engine" && npx --yes playwright install chromium)
     fi
@@ -67,6 +67,9 @@ if [[ "${1:-}" != "--check" ]]; then
   step "Modèle de transcription de la voix (faster-whisper, calage mot à mot)"
   "$PY" -c "import os; from faster_whisper import WhisperModel; WhisperModel(os.environ.get('MK_WHISPER','small'), device='cpu', compute_type='int8'); print('modèle prêt')" \
     || echo "(modèle non téléchargé : il le sera au premier calage de voix)"
+
+  step "Polices libres courantes (≈ 30 familles : Inter, Poppins, Montserrat…)"
+  bash "$HERE/scripts/get_fonts.sh" --essentials || echo "(polices non téléchargées : relancer bash scripts/get_fonts.sh --essentials)"
 
   step "Blender 4.2 LTS (3D photoréaliste, Cycles)"
   bash "$HERE/blender/install_blender.sh"

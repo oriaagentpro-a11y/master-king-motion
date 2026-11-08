@@ -10,11 +10,15 @@ près (vitesses, eases, rythme, transitions, composition, finition), mais avec l
 Rien n'est « à peu près » : chaque valeur vient d'une mesure sur la référence ou d'un contrôle à l'œil noté.
 
 Outils : `scripts/` (Python), `engine/` (rendu Chromium + GSAP), `templates/film.html`.
-**Avant CHAQUE vidéo, lire `references/rules.md`** : les règles d'or (méthodes obligatoires apprises sur les projets
-réels, à ne jamais ignorer). Puis `references/workflow.md` (commandes de chaque phase) et `references/doctrine.md`
-(règles de qualité), et `references/verification.md` (la passe image par image, obligatoire avant chaque livraison).
+**Avant CHAQUE vidéo, lire `references/essentials.md`** (court) : choix AUTOMATIQUE du mode (Rapide par défaut,
+Studio si copie exacte demandée ou si une scène résiste aux contrôles), déclencheurs et règles de base. Les 119 règles
+d'or de `references/rules.md` ne se lisent PAS en entier : Claude charge lui-même les sujets utiles au moment où ils
+servent, avec `python3 scripts/rules.py <sujet>` (`--topics` pour la liste : 3d, voix, texte, suivi, studio…).
+L'utilisateur n'a jamais à dire quelles règles appliquer. Commandes : `references/workflow.md` ; qualité :
+`references/doctrine.md` ; passe image par image avant livraison : `references/verification.md`.
 Chaque nouvelle méthode qui a permis d'atteindre le résultat est AJOUTÉE au skill AU MOMENT où elle sert (script +
-procédure + règle numérotée). `references/reverse-motion-METHODS.md` contient la mémoire technique des mesures (pièges P1–P27).
+procédure + règle numérotée + sujet dans `scripts/rules.py`). `references/reverse-motion-METHODS.md` contient la
+mémoire technique des mesures (pièges P1–P27).
 
 ## Valeurs par défaut (ne pas demander)
 
@@ -25,7 +29,16 @@ procédure + règle numérotée). `references/reverse-motion-METHODS.md` contien
 - Effets sonores seulement si la référence en a, ou sur demande (`sfx.py`).
 
 
-## Pipeline imposé (règles 90 à 94)
+## Deux modes (choisis automatiquement, voir `references/essentials.md`)
+
+**Mode Rapide (par défaut)** : phases 0 à 6 ci-dessous ; la phase 1 mesure le mouvement des éléments clés
+(coupes, durées, eases, positions, rythme) sans décalque au pixel. Contrôles `rhythm.py` « identique »,
+`style_compare.py` « conforme », `nervosity_audit.py` ; une scène qui échoue deux fois monte en Studio, seule.
+
+**Mode Studio** (copie exacte demandée, ou montée automatique d'une scène) : pipeline imposé ci-dessous
+(règles 90 à 94, `python3 scripts/rules.py studio`).
+
+## Pipeline du mode Studio (règles 90 à 94)
 1. Décalque mesuré de la référence (SSIM ≥ 0,98 visé par scène, 0 texte en double) — TOUT recréé en code, rien
    d'extrait (règle 93) ; jusqu'à 2 sous-agents armés de toute la méthode (règle 92).
 2. Contrôle final du décalque et rapport.
@@ -50,7 +63,7 @@ surfaces suivies = `homography_track.py` → `rectify_median.py` (planche média
    seul un mot de passe administrateur (sudo) peut lui être demandé si le système l'exige.
    Projet : `python3 scripts/new_project.py <dossier> --ref ref.mp4 [--ref2 …] --music … --voice … --format 16:9`.
 
-1. **Décalquer puis disséquer la référence (règle 90 : décalque reverse-motion mesuré AVANT toute adaptation ; SSIM ≥ 0,98 par image, 0 fantôme)**
+1. **Disséquer et mesurer la référence** (mode Rapide : dissection + mesure des éléments clés ; mode Studio : décalque reverse-motion mesuré AVANT toute adaptation, règle 90, SSIM ≥ 0,98 par image, 0 fantôme). Charger `rules.py mesure suivi` (+ `3d`, `texte`… selon ce que montre la référence).
    - `dissect.py ref.mp4 analysis/` : coupes, scènes, palette et rôles, mise en page, énergie de mouvement,
      événements, pauses, flou de mouvement, grain, vignettage, tempo. **Regarder** `contact_all.png` et `curves.png`.
    - Mesurer chaque élément qui bouge : `track_elements.py` / `track_textbox.py` / `track_quad.py` /

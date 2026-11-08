@@ -409,7 +409,7 @@ nécessaire). Une règle ne s'enlève jamais. Si elle doit changer, la nouvelle 
     16:9 composée des calques d'ambiance du PSD (fond, lueurs à incrustation couleur, texture lumière douce, prismes
     en mode écran), sans le sujet, rendue par une page Chromium (`build/plate.html`) puis animée en dérive lente.
     Les aplats ne prennent pas de vignettage (un aplat de la réf. est plat).
-90. **PRINCIPE FONDATEUR (exigé par l'utilisateur après 3 versions refusées) : on DÉCALQUE d'abord, on adapte
+90. **(Mode Studio ; en mode Rapide, le « décalque » se limite aux pistes mesurées des éléments clés, et la règle « on ne devine jamais » reste entière.) PRINCIPE FONDATEUR (exigé par l'utilisateur après 3 versions refusées) : on DÉCALQUE d'abord, on adapte
     ensuite. Claude ne devine plus jamais.**
     Étape 1 — DÉCALQUE (méthode reverse-motion) : la référence est reconstruite en code scène par scène, mesurée
     avec TOUS les outils (`track_elements`, `track_textbox`, `track_quad`, `track_template`, `fit_easing`,
@@ -626,3 +626,12 @@ nécessaire). Une règle ne s'enlève jamais. Si elle doit changer, la nouvelle 
      Homebrew / winget), modules Node, Chromium, modules Python, modèle faster-whisper et Blender 4.2 LTS portable dans
      `blender/app/` (archive Linux, .dmg macOS, .zip Windows), puis `doctor.py` avec rendu de test (Blender inclus).
      Jamais « installez Blender vous-même » : l'utilisateur ne doit rien faire, sauf un mot de passe sudo si exigé.
+
+119. **Deux modes et règles à la demande : Claude décide seul, l'utilisateur ne dit jamais quoi appliquer.** Lire
+     `references/essentials.md` (pas les 119 règles). Mode **Rapide** par défaut (mesure du mouvement des éléments clés,
+     adaptation directe) ; mode **Studio** (décalque au pixel, règles 90-105) si copie exacte demandée OU si une scène
+     échoue deux fois à `rhythm.py` / `style_compare.py` / `nervosity_audit.py`, et pour cette scène seulement. Les règles
+     détaillées se chargent par sujet au moment où le déclencheur apparaît : `python3 scripts/rules.py 3d voix texte`
+     (`--topics`, `--match mot`). Toute nouvelle règle est rangée dans un sujet de `scripts/rules.py`. Avant un long rendu :
+     `render_estimate.py job.json` (Blender, carte graphique automatique : OptiX / CUDA / HIP / Metal / oneAPI, `MK_DEVICE=CPU`
+     pour forcer le processeur) ou 1 s de film chronométrée ; annoncer la durée, puis rendre en arrière-plan.

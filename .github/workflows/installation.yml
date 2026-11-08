@@ -1,0 +1,28 @@
+# Vérifie que l'installation automatique fonctionne vraiment sur les 3 systèmes (Linux, macOS, Windows) :
+# outils système, modules, Chromium, polices, modèle de voix, Blender, puis diagnostic avec rendu de test.
+name: Installation automatique
+on:
+  push:
+    paths: ['install.sh', 'install.ps1', 'blender/install_blender.sh', 'scripts/doctor.py', 'scripts/ensure_ready.py',
+            'scripts/get_fonts.sh', 'requirements.txt', 'engine/package.json', '.github/workflows/installation.yml']
+  workflow_dispatch:
+jobs:
+  installer:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 75
+    steps:
+      - uses: actions/checkout@v4
+      - name: Installation complète (comme au premier usage chez un utilisateur)
+        shell: bash
+        run: |
+          PY=python3; command -v python3 >/dev/null || PY=python
+          $PY scripts/ensure_ready.py
+      - name: Deuxième lancement (doit répondre PRÊT en quelques secondes)
+        shell: bash
+        run: |
+          PY=python3; command -v python3 >/dev/null || PY=python
+          $PY scripts/ensure_ready.py | tee out.txt; grep -q "PRÊT" out.txt
