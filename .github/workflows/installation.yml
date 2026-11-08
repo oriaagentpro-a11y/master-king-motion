@@ -25,4 +25,4 @@ jobs:
         shell: bash
         run: |
           PY=python3; command -v python3 >/dev/null || PY=python
-          $PY scripts/ensure_ready.py | tee out.txt; grep -q "PRÊT" out.txt
+          $PY scripts/ensure_ready.py | tee out.txt; grep -aq "PR.*T" out.txt

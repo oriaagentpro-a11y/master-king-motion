@@ -8,6 +8,13 @@
 """
 import os, sys, subprocess
 
+for _st in (sys.stdout, sys.stderr):   # accents lisibles partout (la console Windows est en cp1252 par défaut)
+    try:
+        _st.reconfigure(encoding='utf-8', errors='replace')
+    except Exception:  # noqa: BLE001
+        pass
+os.environ.setdefault('PYTHONIOENCODING', 'utf-8')
+
 _ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 _extra = [os.path.join(_ROOT, 'blender', 'app')]
