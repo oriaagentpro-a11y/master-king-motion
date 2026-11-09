@@ -3,6 +3,10 @@
 Usage: python3 sfx_premium.py cues.json out.wav --duration 33.4 [--seed 7]
 cues.json = [{"t": 1.71, "type": "key"}, {"t": 6.95, "type": "whoosh", "dur": 0.5, "pan": -0.2, "gain": 0.7}, ...]
 Types (all soft, low-passed, no beeps):
+  keyios   light phone-keyboard tick (short, mid-high, no low body) - preferred for typing
+  bloom    soft swell that opens and settles, length = dur, ENDS at t + dur
+  softland felt landing, round low tone, slow attack, no transient
+  keysoft  muted rounded key press (soft 'thock', no dry click) - preferred for typing
   key      mechanical keyboard tap (filtered noise click + small body), random micro-variation per hit
   tick     tiny detent click (wheel / list steps)
   pop      soft rounded bloop (sine glide + air), for cards / tiles appearing
@@ -42,6 +46,25 @@ def make(kind, dur, rng):
         click = bp(x, 1800 + 600 * rng.random(), 6500) * 0.9
         body = np.sin(2 * np.pi * (150 + 40 * rng.random()) * np.arange(n) / SR) * edecay(n, 0.012) * 0.35
         return (click + body) * (0.75 + 0.5 * rng.random())
+    if kind == 'keyios':    # light glass-touch key tick (phone keyboard): very short, mid-high, no low body at all
+        n = int(0.035 * SR); t = np.arange(n) / SR; f0 = (1750 if dur != 0.5 else 1350) * (0.96 + 0.08 * rng.random())
+        tick = np.sin(2 * np.pi * f0 * t) * np.exp(-t / 0.0028) * (1 - np.exp(-t / 0.0004))
+        air = bp(rng.standard_normal(n), 2200, 6500) * np.exp(-t / 0.0018) * 0.35
+        return lp(tick * 0.55 + air, 7000) * (0.8 + 0.25 * rng.random())
+    if kind == 'bloom':     # very soft swell: slow rise, dark and round (no bright opening), settles gently
+        n = int(dur * SR); u = np.linspace(0, 1, n); t = u * dur; pk = 0.78
+        envl = np.where(u < pk, (1 - np.cos(np.pi * u / pk)) / 2, np.exp(-(u - pk) * dur / 0.3)) ** 1.5
+        air = lp(lp(bp(rng.standard_normal(n), 150, 1400), 900), 900) * 0.08
+        pad = sum(np.sin(2 * np.pi * f * t + k) for k, f in enumerate([147, 220, 294])) / 3
+        return (air + lp(lp(pad, 700), 700) * 0.2) * envl
+    if kind == 'softland':  # felt landing: round low tone with a slow 40 ms attack, no transient
+        n = int(0.6 * SR); t = np.arange(n) / SR
+        return np.sin(2 * np.pi * 92 * t) * (1 - np.exp(-t / 0.04)) * np.exp(-t / 0.22) * 0.55
+    if kind == 'keysoft':   # muted, rounded key press (felt 'thock'): low-passed tap + soft body, no dry click
+        n = int(0.09 * SR); t = np.arange(n) / SR
+        tap = lp(bp(rng.standard_normal(n), 500, 3200) * edecay(n, 0.010 + 0.004 * rng.random()) * (1 - np.exp(-t / 0.0015)), 2600)
+        body = np.sin(2 * np.pi * (105 + 25 * rng.random()) * t) * edecay(n, 0.022) * (1 - np.exp(-t / 0.002)) * 0.5
+        return (tap * 0.7 + body) * (0.7 + 0.35 * rng.random())
     if kind == 'tick':
         n = int(0.03 * SR); x = rng.standard_normal(n) * edecay(n, 0.003)
         return bp(x, 2500, 8000) * 0.6
@@ -82,7 +105,7 @@ def main():
     rng = np.random.default_rng(seed); buf = np.zeros((2, int(D * SR) + SR))
     for c in cues:
         k = c['type']; dur = c.get('dur', 0.4); s = make(k, dur, rng) * c.get('gain', 1.0)
-        start = c['t'] - (dur if k in ('whoosh', 'riser') else 0)
+        start = c['t'] - (dur if k in ('whoosh', 'riser', 'bloom') else 0)
         i = int(max(0, start) * SR); pan = c.get('pan', 0.0)
         for ch, g in ((0, np.sqrt(0.5 * (1 - pan))), (1, np.sqrt(0.5 * (1 + pan)))):
             buf[ch, i:i + len(s)] += s[:max(0, buf.shape[1] - i)] * g
