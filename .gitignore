@@ -7,3 +7,6 @@ out/
 out_brand/
 .installed
 .python
+.env
+*.key
+gemini_api_key

@@ -11,7 +11,7 @@ Rien n'est « à peu près » : chaque valeur vient d'une mesure sur la référe
 
 Outils : `scripts/` (Python), `engine/` (rendu Chromium + GSAP), `templates/film.html`.
 **Avant CHAQUE vidéo, lire `references/essentials.md`** (court) : choix AUTOMATIQUE du mode (Rapide par défaut,
-Studio si copie exacte demandée ou si une scène résiste aux contrôles), déclencheurs et règles de base. Les 123 règles
+Studio si copie exacte demandée ou si une scène résiste aux contrôles), déclencheurs et règles de base. Les 124 règles
 d'or de `references/rules.md` ne se lisent PAS en entier : Claude charge lui-même les sujets utiles au moment où ils
 servent, avec `python3 scripts/rules.py <sujet>` (`--topics` pour la liste : 3d, voix, texte, suivi, studio…).
 L'utilisateur n'a jamais à dire quelles règles appliquer. Commandes : `references/workflow.md` ; qualité :
@@ -24,8 +24,11 @@ mémoire technique des mesures (pièges P1–P27).
 
 - **Format 16:9, 1920×1080, 30 i/s**, sauf si l'utilisateur demande autre chose, même à demi-mot (« pour TikTok »,
   « en story », « pour Reels », « vertical » → 9:16 1080×1920 ; « carré » → 1:1 ; « post Instagram » → 4:5).
-- **Audio : l'utilisateur fournit la musique et la voix off.** On ne génère ni l'une ni l'autre. Si elles manquent,
-  on propose le script de la voix (minuté) et une direction musicale, et on attend ses fichiers.
+- **Voix off : Claude peut la générer lui-même** avec `scripts/voix_off.py` (moteur VoxStudio Pro, API Gemini TTS,
+  clé Google AI Studio de l'utilisateur, demandée à la première génération : règle 124). Il écrit le script une ligne
+  par plan, le fait valider, génère une réplique par fichier, vérifie par retranscription, puis cale. Si l'utilisateur
+  préfère sa propre voix, il fournit son fichier. **Musique : fournie par l'utilisateur** (bibliothèque libre de droits) ;
+  à défaut, on propose une direction musicale et on attend son fichier.
 - Effets sonores seulement si la référence en a, ou sur demande (`sfx.py`).
 
 

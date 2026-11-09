@@ -43,7 +43,7 @@ au moment où elles servent.
 - **72 scripts Python** de mesure et de vérification : suivi d'éléments, homographies, ajustement d'easing, audit, lissage, rythme.
 - **Un moteur de rendu** Chromium + GSAP + Three.js, image par image, avec flou de mouvement.
 - **De la 3D photoréaliste dans Blender Cycles** : smartphone modélisé, icônes, objets, composités sur fond transparent.
-- **123 règles d'or** apprises sur des projets réels (`references/rules.md`).
+- **124 règles d'or** apprises sur des projets réels (`references/rules.md`).
 
 ---
 
@@ -99,9 +99,12 @@ Claude suit les 7 phases décrites dans `SKILL.md`. Il vous rend un storyboard �
 
 **Formats :** 16:9 (1920×1080) par défaut. Précisez *vertical / TikTok / Reels* pour du 9:16, *carré* pour du 1:1, *post Instagram* pour du 4:5.
 
-**Audio :** vous fournissez la musique et la voix off. Si elles manquent, Claude vous propose un script de voix minuté
-(une ligne par plan) et une direction musicale. Pour la voix : votre propre enregistrement (même au téléphone), ou un
-outil de synthèse vocale gratuit et open source comme Piper ou Kokoro. Le pack Master Skills inclut aussi un outil de voix off.
+**Voix off générée par Claude :** le skill intègre le moteur de **VoxStudio Pro** (API Gemini TTS de Google). Claude
+écrit le script plan par plan, puis génère lui-même la voix, une réplique par fichier, et vérifie chaque phrase.
+Il faut une **clé API Google AI Studio** (gratuite, avec quota) : Claude la demande à la première génération et vous
+indique la commande à lancer vous-même pour l'enregistrer de façon privée sur votre ordinateur
+(`python3 scripts/voix_off.py --set-key`). Elle n'est jamais copiée dans un projet ni sur GitHub.
+Vous pouvez aussi fournir votre propre enregistrement. **Musique :** fournie par vous, libre de droits.
 
 **Durée :** avant chaque long rendu (3D Blender, Full HD), Claude mesure une image et vous annonce la durée totale.
 La 3D utilise automatiquement votre carte graphique si vous en avez une (NVIDIA, AMD, Apple Silicon).
@@ -117,7 +120,7 @@ master-king-motion/
 ├── install.sh / .ps1   ← installation complète automatique (Blender compris)
 ├── references/
 │   ├── essentials.md   ← l'essentiel lu avant chaque vidéo : modes, déclencheurs
-│   ├── rules.md        ← 123 règles d'or, chargées sujet par sujet (scripts/rules.py)
+│   ├── rules.md        ← 124 règles d'or, chargées sujet par sujet (scripts/rules.py)
 │   ├── workflow.md     ← les commandes de chaque phase
 │   ├── doctrine.md     ← les règles de qualité
 │   ├── verification.md ← la passe image par image avant livraison

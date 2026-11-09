@@ -19,7 +19,7 @@ TOPICS = {   # topic: (trigger words, rule numbers)
     'mesure':     ('mesurer la référence, coupes, fréquences, couleurs', [1, 2, 3, 5, 21, 22, 45, 49, 52, 53, 54, 56, 69, 101]),
     'suivi':      ('élément qui bouge, suivi, écran, étiquette, flou', [4, 6, 7, 8, 28, 46, 55, 66, 68, 80, 96]),
     'texte':      ('textes, phrases, typo, cadre autour d\'un texte, glitch', [15, 60, 73, 97, 98, 106]),
-    'voix':       ('voix off, script de voix, alignement, chevauchement', [9, 59, 83, 111, 114, 122]),
+    'voix':       ('voix off, script de voix, génération de la voix, clé Google, alignement, chevauchement', [9, 59, 83, 111, 114, 122, 124]),
     'musique':    ('musique, temps, tempo, rythme, plusieurs références', [10, 11, 12, 35, 37, 85, 107, 108]),
     'storyboard': ('storyboard, validation, preuve côte à côte', [23, 24, 76, 78, 86]),
     '3d':         ('téléphone, objet 3D, logo 3D, icônes qui tournent, Blender', [20, 26, 27, 28, 29, 30, 31, 32, 33, 34, 36, 40,

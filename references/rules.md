@@ -687,3 +687,18 @@ nécessaire). Une règle ne s'enlève jamais. Si elle doit changer, la nouvelle 
      compressés par la voix (ratio 3) et posés au-dessus de la musique, puis -14 LUFS. (4) Mouvements « premium » :
      glisse douce (1,04 → 1 en 0,6 s, power2) plutôt qu'un coup sec, apparitions en fondu + légère échelle sans rebond,
      et les éléments d'une planche convergent en douceur vers leur dossier.
+
+124. **Claude génère lui-même la voix off (moteur VoxStudio Pro : API Gemini TTS).** `scripts/voix_off.py`. Déroulé :
+     (1) écrire le script UNE LIGNE PAR PLAN (règle 114), avec sa durée max ; le faire valider ; (2) clé : si le script
+     répond `NO_KEY`, demander à l'utilisateur de lancer LUI-MÊME dans son terminal `python3 scripts/voix_off.py --set-key`
+     (saisie masquée, fichier privé ~/.config/master-king-motion/gemini_api_key, droits 600) ou de définir GEMINI_API_KEY ;
+     ne JAMAIS écrire une clé dans le projet, le dépôt ou un message ; si l'utilisateur colle sa clé dans la conversation,
+     l'enregistrer dans ce fichier privé et lui conseiller de la renouveler ensuite dans Google AI Studio ;
+     (3) `--check` (clé + modèles disponibles), puis `--script lignes.txt --out voix/ --voice <voix> --profile <profil>
+     --style "<direction de jeu>"` : un WAV par ligne + manifest.json (durées) ; (4) retranscrire chaque fichier
+     (faster-whisper) : texte exact, aucune consigne lue à voix haute ; régénérer seulement la ligne fautive ; une ligne
+     trop longue pour son plan est raccourcie dans le texte, jamais accélérée au-delà de 1,08 ; (5) poser chaque fichier
+     sur son plan À LA SUITE (règle 122 : ≥ 0,08 s entre deux lignes), recaler les visuels sur les mots, puis le contrôle
+     final de synchro (règle 121). Modèle préféré gemini-3.8-flash-tts, repli automatique si Google le retire ; rotation
+     entre plusieurs clés (GEMINI_API_KEYS) sur quota. Validé sur la pub « l'agent Master Skills » (voix Zephyr,
+     profil tech_dynamic) : texte exact, 1,9-3,1 s par réplique, aucun découpage ni chevauchement à corriger.

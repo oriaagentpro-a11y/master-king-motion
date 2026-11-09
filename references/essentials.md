@@ -1,4 +1,4 @@
-# L'essentiel : à lire avant CHAQUE vidéo (à la place des 123 règles)
+# L'essentiel : à lire avant CHAQUE vidéo (à la place des 124 règles)
 
 Ce fichier suffit pour démarrer. Les règles détaillées de `rules.md` se chargent **à la demande**, sujet par sujet,
 avec `python3 scripts/rules.py <sujet>`, quand un déclencheur ci-dessous apparaît. Claude choisit lui-même le mode et les
@@ -25,7 +25,7 @@ l'étape concernée. Plusieurs sujets peuvent se cumuler (`python3 scripts/rules
 | On mesure la référence (phase 1) | `mesure`, puis `suivi` dès qu'un élément bouge |
 | Un téléphone, un écran en perspective, un objet, un logo ou des icônes en 3D dans la référence | `3d` |
 | Des textes animés, des phrases, une typo à respecter | `texte` |
-| Un fichier de voix ou un script de voix à écrire | `voix` |
+| Un fichier de voix, un script de voix à écrire ou une voix à générer (`voix_off.py`) | `voix` |
 | Une musique, des temps forts, plusieurs références | `musique` (+ `fusion`) |
 | Captures d'app, PSD, logos fournis | `visuels` |
 | On adapte à la marque, on ajoute des éléments | `adaptation` |
@@ -58,7 +58,8 @@ Après le storyboard puis après le rendu, lancer les contrôles et réagir sans
 9. Jamais d'effet « PowerPoint » : tout bouge, pas d'éléments qui apparaissent puis attendent.
 10. Aucune image cassée, aucun aperçu 2D dans le livrable.
 11. Chaque nouvelle méthode qui a servi est ajoutée au skill (script + procédure + règle numérotée).
-12. L'installation est automatique (`ensure_ready.py`) : ne jamais demander à l'utilisateur d'installer quoi que ce soit.
+12. La voix off peut être générée par Claude (`voix_off.py`, règle 124) ; la clé Google n'est jamais écrite dans le projet.
+13. L'installation est automatique (`ensure_ready.py`) : ne jamais demander à l'utilisateur d'installer quoi que ce soit.
 
 ## 5. Avant un long rendu : prévenir de la durée
 
