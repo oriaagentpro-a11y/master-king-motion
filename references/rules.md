@@ -670,3 +670,15 @@ nécessaire). Une règle ne s'enlève jamais. Si elle doit changer, la nouvelle 
      (1,07 → 1, expo, 0,28 s) puis pousse en continu (+1,8 %/s) ; flou de mouvement (`blurAt`) ± 0,12 s autour des coupes.
      (4) Lecteur simulé : bouton et minuteur en `flex:0 0 auto`, onde `min-width:0; overflow:hidden` (sinon bouton écrasé
      et minuteur qui déborde).
+
+123. **Effets sonores premium, recréés (retour utilisatrice : « pas d'effets sonores, les frappes et les vibrations de la
+     référence sont excellentes »).** (1) Repérer QUAND la référence a des effets : composante percussive (HPSS) et
+     attaques par bande (> 2,5 kHz = frappes, tics ; 30-150 Hz = impacts « vibration ») ; ne jamais les extraire (mêlés à
+     la voix et à la musique, et ce sont ceux d'une autre marque) : on recrée leur caractère avec
+     `scripts/sfx_premium.py` (key, tick, pop, whoosh, sub, shimmer, riser, select : doux, filtrés, jamais de bip).
+     (2) Une liste d'effets calée image par image sur les événements du film, dans le temps du FILM : une frappe par
+     caractère tapé (espaces plus doux), un cran par élément de roue, un pop par carte ou tuile, un sub sur chaque
+     révélation, un souffle (whoosh) qui SE TERMINE sur la coupe. (3) Mixage : musique compressée par la voix, effets
+     compressés par la voix (ratio 3) et posés au-dessus de la musique, puis -14 LUFS. (4) Mouvements « premium » :
+     glisse douce (1,04 → 1 en 0,6 s, power2) plutôt qu'un coup sec, apparitions en fondu + légère échelle sans rebond,
+     et les éléments d'une planche convergent en douceur vers leur dossier.

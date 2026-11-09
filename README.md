@@ -43,7 +43,7 @@ au moment où elles servent.
 - **72 scripts Python** de mesure et de vérification : suivi d'éléments, homographies, ajustement d'easing, audit, lissage, rythme.
 - **Un moteur de rendu** Chromium + GSAP + Three.js, image par image, avec flou de mouvement.
 - **De la 3D photoréaliste dans Blender Cycles** : smartphone modélisé, icônes, objets, composités sur fond transparent.
-- **122 règles d'or** apprises sur des projets réels (`references/rules.md`).
+- **123 règles d'or** apprises sur des projets réels (`references/rules.md`).
 
 ---
 
@@ -117,7 +117,7 @@ master-king-motion/
 ├── install.sh / .ps1   ← installation complète automatique (Blender compris)
 ├── references/
 │   ├── essentials.md   ← l'essentiel lu avant chaque vidéo : modes, déclencheurs
-│   ├── rules.md        ← 122 règles d'or, chargées sujet par sujet (scripts/rules.py)
+│   ├── rules.md        ← 123 règles d'or, chargées sujet par sujet (scripts/rules.py)
 │   ├── workflow.md     ← les commandes de chaque phase
 │   ├── doctrine.md     ← les règles de qualité
 │   ├── verification.md ← la passe image par image avant livraison
