@@ -1,4 +1,5 @@
-"""Sound design cues synthesised with numpy (no third-party samples): whoosh, hit, pop, click, riser, shimmer, sub.
+"""NE PAS UTILISER TEL QUEL (règle 123) : sons « par défaut » interdits ; chaque film a sa palette conçue sur mesure.
+Sound design cues synthesised with numpy (no third-party samples): whoosh, hit, pop, click, riser, shimmer, sub.
 
 Usage: python3 sfx.py <out.wav> --duration 32.5 (--cues cues.json | --auto timing.json) [--seed 3]
 cues.json = [{"t": 2.40, "type": "whoosh", "dur": 0.45, "gain": 0.8, "pan": -0.3}, {"t": 2.85, "type": "hit"}, ...]

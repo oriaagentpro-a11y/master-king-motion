@@ -671,7 +671,12 @@ nécessaire). Une règle ne s'enlève jamais. Si elle doit changer, la nouvelle 
      (4) Lecteur simulé : bouton et minuteur en `flex:0 0 auto`, onde `min-width:0; overflow:hidden` (sinon bouton écrasé
      et minuteur qui déborde).
 
-123. **Effets sonores premium, recréés (retour utilisatrice : « pas d'effets sonores, les frappes et les vibrations de la
+123. **INTERDIT CATÉGORIQUE : aucun effet sonore « par défaut » ni de banque toute faite.** Ni les préréglages de
+     `sfx.py`, ni des sons génériques réutilisés d'un projet à l'autre : à chaque vidéo, Claude CONÇOIT une palette
+     sonore neuve, propre au film (caractère, hauteur, longueur, grain réglés d'après les attaques mesurées dans la
+     référence et le style de la marque), synthétisée en code (`sfx_premium.py` comme base de travail, à adapter :
+     nouveaux timbres, nouvelles enveloppes, graine différente), puis l'annonce à l'utilisateur.
+     **Effets sonores premium, recréés (retour utilisatrice : « pas d'effets sonores, les frappes et les vibrations de la
      référence sont excellentes »).** (1) Repérer QUAND la référence a des effets : composante percussive (HPSS) et
      attaques par bande (> 2,5 kHz = frappes, tics ; 30-150 Hz = impacts « vibration ») ; ne jamais les extraire (mêlés à
      la voix et à la musique, et ce sont ceux d'une autre marque) : on recrée leur caractère avec
