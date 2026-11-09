@@ -699,6 +699,10 @@ nécessaire). Une règle ne s'enlève jamais. Si elle doit changer, la nouvelle 
      (faster-whisper) : texte exact, aucune consigne lue à voix haute ; régénérer seulement la ligne fautive ; une ligne
      trop longue pour son plan est raccourcie dans le texte, jamais accélérée au-delà de 1,08 ; (5) poser chaque fichier
      sur son plan À LA SUITE (règle 122 : ≥ 0,08 s entre deux lignes), recaler les visuels sur les mots, puis le contrôle
-     final de synchro (règle 121). Modèle préféré gemini-3.8-flash-tts, repli automatique si Google le retire ; rotation
-     entre plusieurs clés (GEMINI_API_KEYS) sur quota. Validé sur la pub « l'agent Master Skills » (voix Zephyr,
+     final de synchro (règle 121). Modèle préféré gemini-3.8-flash-tts, repli automatique si Google le retire. PLUSIEURS CLÉS :
+     l'utilisateur peut en donner plusieurs (`--set-key` accepte une liste séparée par des virgules ou des espaces,
+     relançable, doublons ignorés ; ou GEMINI_API_KEYS="k1,k2") ; `--list-keys` montre chaque clé masquée et son état.
+     Les clés refusées sont écartées au départ ; quota épuisé (429), clé refusée ou service saturé → clé suivante, puis
+     nouvel essai avec attente. Prévenir l'utilisateur : le quota gratuit est compté par PROJET Google, la bascule
+     n'apporte du quota que si les clés viennent de projets ou de comptes différents. Validé sur la pub « l'agent Master Skills » (voix Zephyr,
      profil tech_dynamic) : texte exact, 1,9-3,1 s par réplique, aucun découpage ni chevauchement à corriger.

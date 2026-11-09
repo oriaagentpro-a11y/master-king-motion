@@ -4,7 +4,9 @@ Usage :
   python3 scripts/voix_off.py --script lignes.txt --out voix/ [--voice Zephyr] [--profile tech_dynamic] [--style "…"]
   python3 scripts/voix_off.py --text "Une idée. Une phrase." --out voix/ --voice Puck
   python3 scripts/voix_off.py --check                 vérifie la clé et liste les modèles de voix disponibles
-  python3 scripts/voix_off.py --set-key               à lancer PAR L'UTILISATEUR dans son terminal (saisie masquée)
+  python3 scripts/voix_off.py --set-key               à lancer PAR L'UTILISATEUR dans son terminal (saisie masquée ;
+                                                      une ou plusieurs clés, séparées par des virgules ; relançable)
+  python3 scripts/voix_off.py --list-keys             nombre de clés, chacune masquée, et son état (valide / refusée)
 lignes.txt : une ligne = une réplique = un fichier (l1.wav, l2.wav…). Une ligne peut commencer par « id | » pour
 nommer le fichier, et contenir [pause 0.8s]. Sortie : un WAV 24 kHz mono par ligne + manifest.json (durées, texte,
 voix, modèle). Claude cale ensuite chaque fichier sur son plan (audio_prep / calage) et vérifie par retranscription.
@@ -12,7 +14,8 @@ voix, modèle). Claude cale ensuite chaque fichier sur son plan (audio_prep / ca
 Clé API Google (Google AI Studio) — JAMAIS dans un dépôt, un dossier de projet ou un message affiché :
   1. variable d'environnement GEMINI_API_KEY (ou GEMINI_API_KEYS="clé1,clé2" pour la rotation), sinon
   2. fichier privé ~/.config/master-king-motion/gemini_api_key (une clé par ligne, droits 600).
-Rotation automatique entre clés sur quota (429), clé invalide ou service saturé ; nouvel essai avec attente ;
+Rotation automatique entre clés sur quota (429), clé invalide ou service saturé (le quota gratuit est compté par
+PROJET Google : des clés de projets différents sont nécessaires pour que la bascule apporte du quota) ; nouvel essai avec attente ;
 repli automatique sur un autre modèle TTS si celui demandé n'existe plus.
 Voix : Zephyr, Puck, Kore, Charon, Fenrir, Aoede, Leda, Orus, Callirrhoe, Iapetus… (voix Gemini prédéfinies).
 Profils de style (VoxStudio) : studio_pro, documentary_deep, cinema_epic, luxury_intimate, tech_dynamic, storyteller_warm.
@@ -46,22 +49,50 @@ def keys():
     return list(dict.fromkeys(ks))
 
 
-def set_key():
-    k = getpass.getpass('Collez votre clé API Google AI Studio (rien ne s\'affiche), puis Entrée : ').strip()
-    if not k:
-        sys.exit('aucune clé saisie')
+def save_keys(new):
+    old = [l.strip() for l in open(KEY_FILE, encoding='utf-8')] if os.path.exists(KEY_FILE) else []
+    allk = list(dict.fromkeys([k for k in old + new if k and not k.startswith('#')]))
     os.makedirs(os.path.dirname(KEY_FILE), exist_ok=True)
     try:
         os.chmod(os.path.dirname(KEY_FILE), 0o700)
     except OSError:
         pass
-    with open(KEY_FILE, 'a', encoding='utf-8') as f:
-        f.write(k + '\n')
+    with open(KEY_FILE, 'w', encoding='utf-8') as f:
+        f.write('\n'.join(allk) + '\n')
     try:
         os.chmod(KEY_FILE, 0o600)
     except OSError:
         pass
-    print('Clé enregistrée dans', KEY_FILE)
+    return len(allk) - len(set(old))
+
+
+def set_key():
+    raw = getpass.getpass('Collez une ou plusieurs clés API Google AI Studio (séparées par des virgules ou des espaces ; '
+                          'rien ne s\'affiche), puis Entrée : ')
+    new = [k for k in re.split(r'[\s,;]+', raw) if k.strip()]
+    if not new:
+        sys.exit('aucune clé saisie')
+    added = save_keys(new)
+    print(f'{added} nouvelle(s) clé(s) enregistrée(s) dans {KEY_FILE} ({len(keys())} au total).')
+
+
+def mask(k):
+    return k[:4] + '…' + k[-4:] if len(k) > 10 else '…'
+
+
+def list_keys():   # status of every key, masked (never printed in full)
+    ks = keys()
+    if not ks:
+        print('Aucune clé enregistrée.'); return
+    for i, k in enumerate(ks, 1):
+        try:
+            call('models?pageSize=1', k); st = 'valide'
+        except urllib.error.HTTPError as e:
+            st = f'refusée ({e.code})'
+        except urllib.error.URLError as e:
+            st = f'réseau indisponible ({e.reason})'
+        print(f'clé {i} : {mask(k)}  {st}')
+    print('Rappel : le quota gratuit est compté par PROJET Google ; des clés du même projet partagent le même quota.')
 
 
 def call(path, key, body=None, timeout=180):
@@ -80,15 +111,23 @@ def err_text(e):
 
 
 def available_models(ks):
-    for k in ks:
+    """Models of the first valid key; removes from ks (in place) every key Google refuses."""
+    models, good, last = None, [], ''
+    for k in list(ks):
         try:
-            d = call('models?pageSize=200', k)
-            return [m['name'].split('/', 1)[1] for m in d.get('models', []) if 'tts' in m['name'].lower()]
+            d = call('models?pageSize=200', k); good.append(k)
+            if models is None:
+                models = [m['name'].split('/', 1)[1] for m in d.get('models', []) if 'tts' in m['name'].lower()]
         except urllib.error.HTTPError as e:
             last = err_text(e)
         except urllib.error.URLError as e:
             sys.exit(f'Réseau : impossible de joindre l\'API Google ({e.reason}).')
-    sys.exit(f'Aucune clé valide ({last}). Vérifiez la clé dans Google AI Studio.')
+    if not good:
+        sys.exit(f'Aucune clé valide ({last}). Vérifiez la clé dans Google AI Studio.')
+    if len(good) < len(ks):
+        print(f'{len(ks) - len(good)} clé(s) refusée(s) par Google, ignorée(s) ; {len(good)} clé(s) utilisable(s).')
+    ks[:] = good
+    return models
 
 
 def tts(text, voice, style, model_list, ks, state):
@@ -114,7 +153,7 @@ def tts(text, voice, style, model_list, ks, state):
                     break                                     # modèle retiré : modèle suivant
                 if e.code in (429, 500, 503) or 'quota' in last.lower() or 'RESOURCE_EXHAUSTED' in last:
                     state['rot'] += 1; time.sleep(min(30, 2 + 3 * attempt)); continue
-                if e.code in (401, 403):
+                if e.code in (401, 403) or 'API key' in last or 'API_KEY' in last or 'PERMISSION' in last:
                     state['rot'] += 1
                     if attempt >= len(ks):
                         sys.exit(f'Clé refusée par Google ({last}).')
@@ -138,6 +177,8 @@ def write_wav(path, data, mime):
 def main():
     if '--set-key' in sys.argv:
         return set_key()
+    if '--list-keys' in sys.argv:
+        return list_keys()
     ks = keys()
     if not ks:
         sys.exit('NO_KEY : aucune clé API Google. Demander à l\'utilisateur de lancer lui-même dans son terminal :\n'
