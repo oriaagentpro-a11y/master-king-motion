@@ -58,6 +58,14 @@ except Exception:
 sc.cycles.max_bounces = 8; sc.cycles.glossy_bounces = 4; sc.cycles.transmission_bounces = 6
 sc.render.resolution_x, sc.render.resolution_y = J['W'], J['H']; sc.render.resolution_percentage = 100
 sc.render.fps = int(round(J['fps'])); sc.render.film_transparent = True
+if J.get('engine', '').upper().startswith('EEVEE'):   # machine sans carte graphique dédiée : Eevee Next (lancer de rayons) sur le GPU intégré (règle 135)
+    sc.render.engine = 'BLENDER_EEVEE_NEXT'; ee = sc.eevee
+    ee.taa_render_samples = J.get('samples', 64)
+    for k, v in (('use_raytracing', True), ('use_shadows', True), ('use_gtao', True)):
+        try: setattr(ee, k, v)
+        except Exception: pass
+    try: ee.ray_tracing_options.resolution_scale = '1'; ee.ray_tracing_method = 'SCREEN'
+    except Exception: pass
 sc.render.image_settings.file_format = 'PNG'; sc.render.image_settings.color_mode = 'RGBA'; sc.render.image_settings.color_depth = '8'
 sc.view_settings.view_transform = 'Standard'   # UI colours must stay exact (AgX/Filmic desaturate brand colours)
 sc.view_settings.look = 'None'; sc.view_settings.exposure = J.get('exposure', 0.0)
@@ -100,6 +108,9 @@ elif J.get('object') == 'tokens':
         t_.rotation_mode = 'ZXY'
     phone = toks[0]     # lights aim at the first token's track; every token is keyed below
 else:
+    if J.get('dims'):   # proportions MESURÉES sur la référence (règle 133) : largeur / hauteur, épaisseur / hauteur, rayon de coin / hauteur
+        d_ = J['dims']; pb.W = d_.get('aspect', pb.W / pb.H) * pb.H; pb.D = d_.get('depth', pb.D / pb.H) * pb.H
+        pb.R_CORNER = d_.get('corner', pb.R_CORNER / pb.H) * pb.H
     phone = pb.build(colors=J.get('colors'))
 phone.rotation_mode = 'ZXY'     # = Three.js Euler 'YXZ' (R = Ry . Rx . Rz)
 # studio lights placed AROUND THE OBJECT (offsets in object heights from its mean position, aimed at it), never near

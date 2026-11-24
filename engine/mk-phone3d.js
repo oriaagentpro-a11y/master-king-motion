@@ -10,6 +10,7 @@
 //   P.screen                            canvas (1170x2532) drawn into the screen; call P.screenDirty() after drawing
 //   P.card(i, canvas, {y, h})           a 3D card above the screen (P.cards[i].z / .rx animatable), canvas = its face
 //   P.render()                          draw now (MK.film after() hook)
+//   options mesurées sur la référence : depth (épaisseur / hauteur), aspect (largeur / hauteur), corner, color (cadre)
 (function () {
   const T = () => window.THREE;
   function roundedRectShape(w, h, r) {
@@ -40,9 +41,9 @@
     key.shadow.mapSize.set(2048, 2048); key.shadow.radius = 6; Object.assign(key.shadow.camera, { left: -2, right: 2, top: 2, bottom: -2 });
     scene.add(key); scene.add(new THREE.AmbientLight(0xffffff, 0.25));
     // ---- body (procedural) : proportions of a modern 6.1" phone, height = 1 world unit
-    const hh = 1, ww = hh * 0.4815, dd = hh * 0.052, rr = ww * 0.17;
+    const hh = 1, ww = hh * (o.aspect || 0.4815), dd = hh * (o.depth || 0.052), rr = ww * (o.corner || 0.17);   // épaisseur / proportions MESURÉES sur la réf. (règle 133)
     const phone = new THREE.Group(); scene.add(phone);
-    const frameMat = new THREE.MeshPhysicalMaterial({ color: new THREE.Color(o.color || '#2b2d31'), metalness: 1, roughness: 0.32, clearcoat: 0.6, clearcoatRoughness: 0.25, envMapIntensity: 1.25 });
+    const frameMat = new THREE.MeshPhysicalMaterial({ color: new THREE.Color(o.color || '#2b2d31'), metalness: 1, roughness: o.roughness ?? 0.32, clearcoat: 0.6, clearcoatRoughness: 0.25, envMapIntensity: o.envFrame ?? 1.25 });
     // body = extruded rounded rectangle with a rounded bevel (RoundedBoxGeometry caps the corner radius at depth/2:
     // a phone needs corner radius >> thickness, hence extrusion)
     const bev = dd * 0.42;

@@ -706,3 +706,200 @@ nécessaire). Une règle ne s'enlève jamais. Si elle doit changer, la nouvelle 
      nouvel essai avec attente. Prévenir l'utilisateur : le quota gratuit est compté par PROJET Google, la bascule
      n'apporte du quota que si les clés viennent de projets ou de comptes différents. Validé sur la pub « l'agent Master Skills » (voix Zephyr,
      profil tech_dynamic) : texte exact, 1,9-3,1 s par réplique, aucun découpage ni chevauchement à corriger.
+
+125. **Référence en fréquence d'images variable : la réencoder en 30 i/s constant AVANT toute mesure.** Cas réel (iroko,
+     R3 Klickpin) : `r_frame_rate` annonçait 120 i/s pour 31,6 i/s réels (`avg_frame_rate` 9504/301) ; `dissect.py` et
+     les `track_*` lisaient les instants ×3,8 trop vite (cartes-mots de 0,17 s au lieu de 0,67 s). Contrôle : comparer
+     `r_frame_rate` et `avg_frame_rate` (`ffprobe`) ; s'ils diffèrent, `ffmpeg -i ref.mp4 -vf fps=30 -c:v libx264 -crf 14 -an`
+     puis redisséquer. Garder l'original à part.
+
+126. **Voix générée ligne par ligne : la poser SUR LES TEMPS, à la suite, et finir sur la vraie fin du morceau.**
+     `scripts/vo_layout.py` (à copier dans le projet et régler : GAPS par ligne, FIRST, TAIL, MUSIC_END) : chaque réplique
+     (silences rognés) démarre sur le premier temps après fin(n-1) + écart ; l'extrait musical est choisi pour que la fin
+     du film tombe sur le changement de section final mesuré par `audio_prep` (cas iroko : extrait à 22,27 s, film 42,8 s).
+     `audio_prep` ne liste parfois les temps que sur une partie du morceau (49 s sur 72) : prolonger la grille au pas
+     mesuré (`beat_s`). Puis `audio_prep --voice voix_calee.wav --script … --align` pour les mots horodatés.
+     faster-whisper avec une version d'`av` qui refuse `metadata_errors` : passer l'audio en tableau numpy (librosa, 16 kHz).
+
+127. **Film calé sur la voix (sans retime) : `polish_lint.py` et `storyboard.py` attendent la structure de retime.py.**
+     Faire alors les mêmes contrôles à la main : loudness `ebur128` (-14 LUFS, crête ≤ -1 dBTP), durée son = image,
+     `freezedetect=n=0.0005:d=0.4` (aucune image figée > 0,3 s hors fin voulue : poussée caméra continue sinon), planche
+     4 i/s du film entier regardée en entier ; storyboard réf. | rendu réel par un script de projet (2 instants par scène).
+     Piège vu : dans une timeline GSAP, `fromTo({opacity: 0.35})` s'applique dès la construction → mots visibles en
+     transparence avant leur instant ; utiliser `tl.set(…, t)` puis `tl.to(…)`.
+
+128. **Windows : tous les fichiers en UTF-8, imposé une fois pour toutes dans `scripts/_mkpy.py`.** Sous Windows, `open()`
+     sans `encoding` lit et écrit en cp1252 : `new_project.py` produisait un `plan.json` illisible (« octet 0xe9 invalide »
+     au premier `json.load(..., encoding='utf-8')`, cas réel Monniz). `_mkpy` relance donc l'interpréteur en mode UTF-8
+     (`-X utf8`, `PYTHONUTF8=1` hérité par les sous-processus) et `mkcommon.save_json` écrit en UTF-8 explicite. Un script
+     ajouté au skill importe `_mkpy` en premier (comme tous les autres) et n'a rien d'autre à faire. Les accents mal
+     affichés dans la console ne prouvent rien : vérifier les octets du fichier (`open(f,'rb').read().decode('utf-8')`).
+
+129. **Match-move d'un téléphone de référence (`pose_refine_edges.py`) : simplexe explicite + géométrie MESURÉE de la
+     maquette.** Deux défauts trouvés sur la réf. A de Monniz (téléphone qui pivote, f83-95) : (1) Nelder-Mead de scipy
+     construit son simplexe initial en décalant chaque paramètre de 5 % ; un paramètre NUL (rotations d'un départ de
+     face, x = 0) n'est décalé que de 0,00025 → les rotations restaient à 0,000 sur toutes les images (le contour projeté
+     restait de face). Corrigé : simplexe explicite (x, y 0,02 ; z 5 % ; rotations 3°), deux passes (×1 puis ×0,35).
+     (2) Les téléphones des pubs sont souvent des maquettes (îlot plus bas et plus gros, coins et bordure différents
+     d'un iPhone) : la géométrie iPhone par défaut tirait la pose de ~5 px (écart 2,8 px). Mesurer la maquette sur une
+     image presque de face, en fractions de la hauteur du boîtier, et la donner : `--geom aspect,coin,bordure,îlot_l,
+     îlot_h,îlot_haut` (Monniz : 0.493,0.057,0.010,0.124,0.047,0.0757) → écart 1,0 px, îlot et bords collés au zoom.
+     `--parts body,screen` quand l'îlot est hors cadre ou noyé dans un écran sombre. Ne pas utiliser `track_screen.py`
+     sur un téléphone posé sur un fond SOMBRE : le fond touche le cadre, l'outil prend la silhouette du boîtier, qui
+     n'est plus un rectangle plan dès que la tranche se voit (erreur de 5 à 20 px qui grandit avec la rotation).
+     Toujours vérifier une référence avant mesure avec `mk.pulldown` : la réf. A était un 24 i/s passé en 30 i/s.
+     Prise qui COMMENCE floue (juste après une coupe) ou qui FINIT sur un raccord (écran qui change) : `--reverse` part
+     de l'image nette (Monniz f113 : 2,1 → 1,0 px ; f226-237 : 3,2 → 1,1 px). Îlot hors cadre pendant toute la prise :
+     l'ancre peut être hors image (y négatif) ; tester 4-6 hypothèses (y, largeur) sur l'image nette avec un seul
+     image (`f0 = f1`), garder le coût le plus bas (f49 : y = −20, l = 100 → 1,45 px, prise entière 1,09 px).
+     Écran sombre (UI noire) : `--parts body` et ancre déduite du haut du boîtier (îlot à 0,0757 × hauteur).
+     Contrôle obligatoire : surimpression première / milieu / dernière image de chaque prise.
+
+130. **Objets qui se CHEVAUCHENT (cartes empilées, pilules 3D qui se croisent) : suivi par couleur, `color_blobs.py`.**
+     `track_quad` (une couleur, 4 coins) fusionne les cartes voisines ; l'homographie ORB d'une carte posée devant un
+     téléphone qui bouge prend des points du téléphone et dérive. Pour chaque objet : sa couleur de marque exacte (palette
+     mesurée sur les aplats, jamais un pixel pris au hasard : il tombe sur un texte), `min_area` assez haut pour ne pas
+     prendre une illustration de la même couleur (Monniz f190-196 : la tortue verte de la carte jaune prise pour la
+     carte verte, réglé par min_area 4000), `--distinct` sur une référence en pulldown. On obtient centre, angle,
+     largeur, aire visible : l'ordre d'arrivée, la trajectoire et l'ease de chaque objet. Une carte TEXTURÉE et rigide
+     posée sur un écran (notification, carte de solde) se suit mieux par `homography_track` puis `homography_refine`
+     (ECC sur sa texture médiane, `rectify_median --frames clé±1`) : sur Monniz, l'ORB seul dérivait de 20-40 px loin de
+     l'image clé ; l'ECC tient la carte sur toute la prise, sauf les 3-4 images d'entrée floues (à lire à l'œil).
+     Coins d'une carte NOIRE posée contre le cadre noir d'un téléphone : le masque couleur les fusionne, lire les 4
+     coins sur un zoom quadrillé ×2 de l'image clé.
+
+131. **Captures du film à des instants choisis : `engine/snap.mjs` (storyboard, contrôle rapide).** Une seule ouverture
+     de Chromium, `__rm.seek(t)` puis capture, pour chaque instant donné, et la liste des erreurs de console à la fin. Cas
+     Monniz : 27 instants en ~1 min contre ~3 s par image avec `render.mjs` (une page relancée par plage). Le storyboard
+     réf. | rendu réel se monte ensuite en une planche (référence à l'image réf. qui donne le mouvement, voix du moment).
+     Sous Windows, `drawtext` de ffmpeg plante (fontconfig absent) : numéroter les planches avec OpenCV (`putText`).
+
+132. **Cartes et étiquettes « bien posées » : jamais une image tordue sur 4 coins bruts (retour utilisateur Monniz :
+     « penché en perspective, pas bien dessiné » sur la notification, la pilule, la pile de cartes).** Causes trouvées et
+     corrections : (1) quadrilatère clé faux : l'ombre ou la dalle sous la carte prise dans le masque (notification :
+     côté gauche 98 px, côté droit 171 px) → lire les 4 coins de la FACE sur un zoom quadrillé ×2 (intersection des
+     bords), relancer `homography_track` + `homography_refine` ; (2) homographie libre qui cisaille un objet rigide
+     (pilule : côtés 95 / 108 px) → `scripts/card_pose.py` : vrai rectangle en perspective (rapport cherché, pose
+     lissée, coins reprojetés `clean`) ; contrôle par surimpression ; si le rapport trouvé est absurde (notification
+     5,95 : face écrasée, texte condensé), garder les coins ECC justes et donner à la face le rapport de la texture
+     redressée médiane ; `--parent poses.json:prise` résout la carte dans le repère du téléphone (évite la pose
+     « valide » mais tournée de 52°) ; (3) objet plat de UI 2D (pilule) → rectangle minimal mesuré (centre, angle,
+     taille constante) dessiné à plat, pas de matrix3d ; (4) pile de cartes identiques → largeur commune (carte du
+     dessus, jamais cachée), rapport h/l par carte mesuré entière, pose lue sur une image où toutes sont entières,
+     ombre plate mesurée (niveau, décalage) ; (5) logos de partenaires : MÊME tuile pour tous (forme, taille, rayon,
+     liseré), fond = fond du logo, contenu centré sur sa boîte d'encre mesurée avec marge égale (13 %) ; (6) texte
+     centré dans une pilule partiellement couverte : centrer icône + texte dans la plus grande partie VISIBLE de l'axe
+     (couverture calculée contre les pilules dessinées après), corps réduit si besoin. Toujours comparer réf. | film au
+     même instant, à la même échelle, sur la zone de l'objet (pas seulement la planche entière) avant de livrer.
+
+133. **Comparer réf. | film au MÊME instant, zone par zone, puis mesurer chaque écart (retour Monniz n° 2 : « gros
+     problème » sur la notification, les cartes, l'épaisseur du téléphone).** Écarts trouvés et méthode :
+     (1) carte qui se redresse vite (notification f53 → f58) : l'ECC perd la carte, les coins figés la laissent penchée →
+     `scripts/face_quad.py` : face unie par couleur (blanc pur tol 10), séparation par érosion forte (15 px : coupe le
+     liseré blanc d'une dalle qui relie la face au fond) puis reconstruction dans le masque d'origine, 4 droites
+     ajustées (cv2.fitLine, 18 % des bouts écartés), bords de la ROI traités comme bords d'image ; lissage des coins ;
+     rapport de face mesuré (2,75), icône placée HORS de la face comme sur la réf. ;
+     (2) pile de cartes : jamais des rectangles tournés en 2D ; les 4 coins de CHAQUE carte par couleur (`face_quad.py
+     --hex`) donnent la vraie perspective du bloc ; une carte dont l'illustration coupe le masque est complétée avec la
+     longueur de ses voisines ; mise en page de la face mesurée (sous-titre 0,11 h en accent, titre 0,25 h graisse 500,
+     illustration à droite) ;
+     (3) téléphone : épaisseur mesurée par la bande latérale visible sous une rotation connue (largeur bande / (px par
+     unité × |sin ry|)) : 0,057-0,075 → 0,060 ; couleur du cadre relevée sur la bande (lavande #A3A1B9, ombre #6F7296,
+     reflet #E0E2F2) ; `mk-phone3d.js` accepte maintenant depth / aspect / corner / roughness. Outil de contrôle :
+     `tools/cmp_frames.py` du projet (réf. | film, même image, même zone) avant tout envoi à l'utilisateur.
+
+134. **Ce que l'utilisateur voit comme UN objet se dessine comme UN objet (retour Monniz n° 3).** La notification de la
+     réf. est une seule carte blanche qui CONTIENT l'icône à gauche : mesurer la face blanche seule puis placer l'icône
+     dehors donne un objet « cassé » (icône qui dépasse, carte qui paraît penchée). Corriger le contour mesuré pour
+     englober l'élément (coins gauches prolongés le long des bords haut / bas de 0,70 × hauteur, débord de l'icône
+     mesuré f51-58 : 0,60-0,69 h). Logos de partenaires sur une carte : fond de la carte = fond exact du logo, logo
+     posé SANS cadre ni liseré (`logoBare`, rond découpé pour un logo rond) : surface uniforme. Fond d'écran du
+     téléphone : la photo fournie par l'utilisateur (recadrée pour couvrir l'écran), jamais un fond inventé.
+
+135. **Téléphone « ultra réaliste » = rendu Blender composité image par image, jamais l'aperçu WebGL dans ce qu'on
+     montre (retour Monniz : « on dirait du métallique, bâclé »).** Chaîne : (1) le film enregistre à chaque image le
+     téléphone visible (`window.__phoneRec` = prise, focale, pose, clé d'écran ; `window.__screens`) ; (2)
+     `node engine/export_phone.mjs page.html render3d` → `phone_track.json` + un PNG par écran ; (3)
+     `python scripts/phone_jobs.py render3d/phone_track.json render3d --colors … --dims '{"aspect":…,"depth":…,
+     "corner":…}' --engine EEVEE|CYCLES [--still n1,n2]` → un job par suite (même prise, même écran) + `run_jobs.sh` ;
+     proportions et finition MESURÉES (cadre satiné : frame_rough 0,42, metal 0,9 ; un cadre miroir paraît « en métal
+     faux ») ; (4) le film lit `window.PHONE_SEQ` (image n → PNG RGBA) et remplace l'aperçu, `__rm.settle()` attend le
+     décodage. Choix du moteur MESURÉ sur la machine : Monniz (i7-7600U 2 cœurs, Intel HD 620, pas de GPU dédié) :
+     Cycles 245 s / image fixe, ~200 s en suite ; Eevee Next (lancer de rayons) 86 s fixe, 25 s en suite, rendu
+     visuellement équivalent sur un téléphone (vérifié côte à côte) → Eevee : 440 images ≈ 3 h 15 contre ≈ 24 h. Pour le
+     storyboard, ne rendre que les images montrées (`--still`). Épaisseur : prendre le haut de la fourchette mesurée
+     si la bande latérale paraît trop fine à la comparaison (0,060 → 0,070).
+
+136. **Un rendu long se reprend, il ne se recommence pas (PC éteint, pause demandée).** Les images sont écrites une à une :
+     `phone_jobs.py --missing` ne garde que les jobs qui ont des images absentes et ne rend que celles-là (toutes les
+     poses restent dans le job : flou de mouvement continu) ; `render.mjs --resume` garde le dossier d'images et saute
+     celles qui existent et se lisent (une image coupée par l'arrêt est refaite). Cas Monniz : arrêt à 428 / 440 images
+     téléphone → reprise = 12 images au lieu de 4 h. Pause sans éteindre : suspendre / reprendre les processus
+     (`psutil.Process(pid).suspend()` / `.resume()`), rien n'est refait.
+
+137. **Le storyboard ne prouve pas le rendu continu : contrôler le RENDU lui-même avant livraison.** Cas Monniz : une
+     courbe dessinée sur un canevas 2D d'arrière-plan pendant 0,4 s est restée affichée 10 s sur les scènes suivantes
+     dans le rendu long (render.mjs, SwiftShader), alors que chaque image faisait `clearRect` et que les captures
+     isolées (snap.mjs) et un rendu court étaient propres. Correction : remise à zéro complète des canevas à chaque
+     image (`canvas.width = W`), et tout ce qui doit être caché par un panneau dessiné sur le même calque que lui.
+     Contrôles obligatoires sur le fichier final : planche 2 images/s du film entier REGARDÉE, `freezedetect`
+     (n=0,0005, d=0,4 : un écran uni avec une petite coche figée 0,6 s a été trouvé ainsi → dérive lente ajoutée),
+     loudness ebur128 (-14 LUFS, crête -1 dB). Reprise du rendu après correction : supprimer les images touchées et
+     relancer `render.mjs --resume` (seules elles sont refaites).
+     CAUSE TROUVÉE (Monniz v2) : le moteur ne recompose un canevas que si l'on y DESSINE ; vidé (width = W) sans aucun
+     dessin dans l'image, il garde l'ancienne image à l'écran (bouton « Envoyé », coche, vague figés sur les blocs
+     suivants). Correction : à la fin de chaque `seek`, un pixel quasi invisible sur chaque canevas
+     (`fillStyle = 'rgba(255,255,255,0.004)'; fillRect(0,0,1,1)`). Les captures isolées (snap.mjs) ne le montrent jamais :
+     contrôler les images du RENDU (out/…_frames) aux instants où un calque se vide.
+
+138. **Copie identique d'une référence « UI qui flotte sur fond blanc » : `scripts/comp_track.py`, image n = image n.**
+     Retour Monniz : « bâclé, pas fluide, tremblote, tout mélangé » sur une fusion de deux styles étirée ×0,26-0,62.
+     Méthode qui a marché : UNE référence, 30 i/s natif, aucune image étirée ; chaque élément (pilule, carte, bulle, tache
+     liquide, vague, coche, icône, fenêtre) suivi par composante sur le fond (identité par proximité, rectangle orienté,
+     contour simplifié, couleur) ; quadrilatère = droites ajustées sur les bords haut / bas du contour dans l'axe (garde la
+     perspective) ; garde anti-fusion (taille qui saute > 25 % = image remplacée par sa voisine) ; Savitzky-Golay 5/2 ;
+     formes organiques rejouées par leur CONTOUR mesuré (la fonte des photos devient les tuiles vues à travers la forme).
+     Cas particuliers : panneau qui déborde du cadre → rectangle droit (l'angle minimal bascule de 90°) ; fenêtre blanche
+     sur blanc → échelle par un élément toujours visible (hauteur de sa barre de recherche) ; lignes coupées par le cadre →
+     largeur réelle par le rapport mesuré sur les lignes entières. Contrôle : vidéo côte à côte réf. | film.
+
+139. **Éléments rigides d'une réf. « UI qui flotte » : suivi PLANAIRE ECC sur les pixels (`scripts/ecc_pose.py`), jamais un
+     quad reconstruit depuis le contour.** Retour Monniz v2 : « tout est déformé, les flous ne sont pas les mêmes ». Cause :
+     le contour (comp_track, règle 138) se trompe dès que l'élément est flou, en fondu, collé à un autre objet ou coupé par
+     une zone de recherche → trapèzes, tonneaux, bascule de 90°, bouton qui « explose » (le suivi passe sur la carte voisine).
+     Méthode : gabarit = l'élément réel à une image nette (ancre ; rectangle exact donné en `quad` si la composante englobe
+     autre chose : étiquette, main, ombre) ; homographie ECC image par image (pyramide 1/4-1/2-1, prédiction à vitesse
+     constante, gabarit rafraîchi sans changer sa géométrie, partie hors cadre exclue, OpenCV 5 = findTransformECCWithMask) ;
+     quad = rectangle d'ancre projeté (vraie perspective, proportions exactes). Fiable si cc ≥ 0,85 ; trous comblés coin par
+     coin ; entrées / sorties prolongées à vitesse constante ; opacité = encre / encre à l'ancre (valable seulement sur un vrai
+     fondu : un remplissage ou un texte qui s'écrit change l'encre). Phases de zoom fouetté : une ancre par phase (ex. lignes
+     petites / zoomées / inclinées) mises bout à bout. Élément fin (barre de recherche) qui porte un grand panneau : en
+     déduire une SIMILITUDE (la perspective verticale d'une barre fine amplifie le bruit). Faces dessinées au rapport
+     largeur / hauteur de l'ancre ; texte jamais étiré (morphose de bulle : forme en espace écran, texte à taille fixe).
+     Contrôle : `--check` (quad sur 8 images par élément), REGARDÉ, puis planche réf. | film aux instants signalés.
+
+140. **Flous de la réf. : flou de mouvement par accumulation + flou de fondu.** Le film expose `__rm.blurAt(t)` →
+     [échantillons, obturateur 0,5] calculé sur le déplacement max des coins entre f et f+1 (n = ceil(dépl. × 0,5 / 5 px),
+     12 max) ; les pistes sont interpolées aux images fractionnaires (contours : translatés du déplacement du centre).
+     Entrées / sorties en fondu : flou proportionnel (16 px × (1 − opacité)), appliqué au calque AVANT la transformation
+     (rayon converti en px du canevas). Écho de traînée (icône qui arrive) : copies aux positions passées, opacité décroissante.
+
+141. **Design sonore : sons de bibliothèque sous licence vérifiée, jamais de son synthétisé par défaut, jamais de woosh.**
+     Retour Monniz : « aucun effet sonore par défaut de Claude, jamais de woosh ». Méthode : 1) analyser le son de la réf. :
+     séparation `demucs` (htdemucs : voix / autres / batterie / basse), onsets hors de la grille de doubles-croches du tempo
+     = candidats effets (Monniz : la réf. est une chanson, presque aucun effet distinct → design sonore construit sur nos
+     propres coups) ; 2) bibliothèque CC0 vérifiée sur le site ET dans le License.txt du paquet (Kenney « Interface Sounds »
+     et « UI Audio », téléchargement après accord de l'utilisateur) ; 3) tri à la MESURE (on n'écoute pas) : durée, attaque,
+     centroïde, platitude, dérive du centroïde → exclus : attaque lente ou hauteur qui glisse (maximize, minimize, open,
+     close, scroll = familles « woosh »), scratch, glitch, error ; 4) feuille de coups image par image (`tools/build_audio_v3.py` :
+     image, son, gain, rôle), coups répétés (compteur, frappe) 10-19 dB plus bas ; 5) `finalize.py --sfx`, contrôle ebur128
+     (-14 LUFS, crête -1 dBTP) et retranscription de la voix SUR le mix final (intelligibilité sous musique et effets).
+
+142. **Voix et coups calés sur l'IMAGE, jamais à la file.** Retour Monniz : « la voix est complètement décalée ». Cause :
+     répliques posées l'une après l'autre (fin de la précédente + 0,2 s) → la dérive s'accumule (jusqu'à 1,3 s de retard).
+     Règle : chaque réplique CLOUÉE au début de son bloc (resserrée par atempo ≤ ×1,12 si elle déborde ; sinon réécrire
+     la phrase) ; un élément nommé par la voix (« MTN, Wave, Orange ») arrive SUR son mot : onsets de syllabes mesurés
+     (librosa, plus précis que les horodatages de Whisper), puis temps de pause insérés sur des images calmes de la réf.
+     (`HOLDS` [image réf., images ajoutées], la réf. avance d'une image en 1+E images) et horloge propre décalée par élément ;
+     le reste du film = mêmes images décalées (renommer les PNG rendus au lieu de les refaire). Coups sonores : vérifiés
+     sur les images RENDUES (pic de différence d'image à ±3 images), recalés sur le pic, jamais deux coups à < 3 images.

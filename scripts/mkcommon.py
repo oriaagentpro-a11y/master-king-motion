@@ -185,7 +185,8 @@ def grid_density(edge_maps, n=6):
 
 def save_json(obj, path):
     os.makedirs(os.path.dirname(os.path.abspath(path)), exist_ok=True)
-    json.dump(obj, open(path, 'w'), indent=1, ensure_ascii=False)
+    with open(path, 'w', encoding='utf-8') as f:  # UTF-8 explicite (règle 127)
+        json.dump(obj, f, indent=1, ensure_ascii=False)
 
 
 def plot_curves(series, path, w=1400, h_each=90, marks=None, fps=30):

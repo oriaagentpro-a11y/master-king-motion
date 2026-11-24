@@ -3,7 +3,7 @@
 // The page must expose window.__rm = { seek(t) } that puts every animation at time t (seconds).
 import { chromium } from 'playwright';
 import { execFileSync } from 'node:child_process';
-import { mkdirSync, rmSync, existsSync, writeFileSync, readdirSync } from 'node:fs';
+import { mkdirSync, rmSync, existsSync, writeFileSync, readdirSync, readFileSync } from 'node:fs';
 import os from 'node:os';
 import { PNG } from 'pngjs';
 import path from 'node:path';
@@ -46,7 +46,9 @@ function findChrome() {
   return sys.find(existsSync); // undefined -> Playwright reports a clear error
 }
 
-rmSync(framesDir, { recursive: true, force: true });
+// --resume : reprise après un arrêt (PC éteint) : les images déjà écrites sont gardées et sautées (règle 136)
+const resume = args.includes('--resume');
+if (!resume) rmSync(framesDir, { recursive: true, force: true });
 mkdirSync(framesDir, { recursive: true });
 const browser = await chromium.launch({ executablePath: exe, args: ['--force-color-profile=srgb', '--disable-lcd-text', '--font-render-hinting=none', '--allow-file-access-from-files', '--ignore-gpu-blocklist', '--use-angle=swiftshader', '--enable-unsafe-swiftshader'] });
 const page = await browser.newPage({ viewport: { width: W, height: H }, deviceScaleFactor: Number(opt('scale', 1)) });   // --scale 2.6087 : scène 736x414 rendue en 1920x1080 (tout est en code : aucune perte)
@@ -99,6 +101,7 @@ const TIMES = (() => { const W = (opt('warp', '') || '').split(',').filter(Boole
 for (let j = 0; j < TIMES.length; j++) {
   const f = f0 + j, [tSrc, spd] = TIMES[j];
   const out = path.join(framesDir, `f_${String(j).padStart(5, '0')}.png`);
+  if (resume && existsSync(out)) { try { PNG.sync.read(readFileSync(out)); continue; } catch { /* image coupée par l'arrêt : refaite */ } }
   const mb = await page.evaluate(t => (window.__rm.blurAt ? window.__rm.blurAt(t) : null), tSrc);
   if (!mb || mb[0] <= 1) {
     await page.evaluate(t => { window.__rm.seek(t); }, tSrc);

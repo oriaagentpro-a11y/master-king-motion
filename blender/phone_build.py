@@ -108,10 +108,10 @@ def build(colors=None, screen_image=None):
     c = {'frame': '#2B2F36', 'back': '#24324A', 'plateau': '#1E2A3E', 'band': '#3A4150', 'ring': '#5A6170', **(colors or {})}
     root = bpy.data.objects.new('Phone', None); bpy.context.collection.objects.link(root)
     M = {
-        'frame': mat('Frame', srgb(c['frame']), metallic=1.0, rough=0.34, aniso=0.3, coat=0.0, coat_rough=0.2),   # graphite: edges must not glow white (ref A f371-f393)
+        'frame': mat('Frame', srgb(c['frame']), metallic=c.get('frame_metal', 1.0), rough=c.get('frame_rough', 0.34), aniso=c.get('frame_aniso', 0.3), coat=0.0, coat_rough=0.2),   # satiné : frame_rough ~0,45 (aluminium anodisé)   # graphite: edges must not glow white (ref A f371-f393)
         'band': mat('AntennaBand', srgb(c['band']), metallic=0.0, rough=0.55),
         'glass_front': mat('FrontGlass', (0.002, 0.002, 0.0025), rough=0.18, coat=0.0, coat_rough=0.0, spec=0.12),   # black bezel stays black at grazing angles (a mirror coat reflected the white studio as a white band)
-        'back': mat('BackFrosted', srgb(c['back']), metallic=0.25, rough=0.42, coat=1.0, coat_rough=0.22),
+        'back': mat('BackFrosted', srgb(c['back']), metallic=0.25, rough=c.get('back_rough', 0.42), coat=1.0, coat_rough=0.22),
         'plateau': mat('CameraPlateau', srgb(c['plateau']), metallic=0.3, rough=0.08, coat=1.0, coat_rough=0.02),
         'ring': mat('LensRing', srgb(c['ring']), metallic=1.0, rough=0.16, aniso=0.6),
         'cell': mat('LensCell', (0.004, 0.004, 0.005), rough=0.3),

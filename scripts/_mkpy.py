@@ -15,6 +15,16 @@ for _st in (sys.stdout, sys.stderr):   # accents lisibles partout (la console Wi
         pass
 os.environ.setdefault('PYTHONIOENCODING', 'utf-8')
 
+# Fichiers en UTF-8 partout (règle 127) : sous Windows, open() sans encoding lit/écrit en cp1252 ; plan.json et
+# notes.json sortaient illisibles (cas réel Monniz : « octet 0xe9 invalide »). On relance l'interpréteur en mode UTF-8
+# (-X utf8) une seule fois, avant tout le reste ; les sous-processus Python héritent de PYTHONUTF8=1.
+if (os.name == 'nt' and not sys.flags.utf8_mode and not os.environ.get('MKPY_UTF8')
+        and sys.argv and sys.argv[0].endswith('.py') and os.path.isfile(sys.argv[0])):   # importé ailleurs : pas de relance
+    os.environ['MKPY_UTF8'] = '1'
+    os.environ['PYTHONUTF8'] = '1'
+    sys.exit(subprocess.call([sys.executable, '-X', 'utf8', os.path.abspath(sys.argv[0])] + sys.argv[1:]))
+os.environ['PYTHONUTF8'] = '1'
+
 _ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 _extra = [os.path.join(_ROOT, 'blender', 'app')]

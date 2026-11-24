@@ -13,6 +13,12 @@ gridded zoom of the first frame, noted as « œil »); rotations and focal (--fo
 --fov-search a,b: also search the vertical fov on the first frames (closest fit)
 --roi: only edges inside it count (e.g. the inset panel of a shot) ; --debug writes overlays every 5 frames.
 Geometry = blender/phone_build.py proportions (screen inset 2.05 mm, corner 10.6 mm, island 19 x 5.6 mm).
+--geom aspect,corner,bezel,isl_w,isl_h,isl_top : the reference's OWN phone (mock-up) measured on a near-frontal frame,
+       all in fractions of the body height (règle 129 ; Monniz réf. A : 0.493,0.057,0.010,0.124,0.047,0.0757). A mock-up
+       whose island sits lower than the iPhone's pulls the pose off by ~5 px if the default geometry is kept.
+--reverse : walk from f1 back to f0 (the anchor / --init / fov search are read on f1): a shot that starts on a
+       blurred or cropped frame is solved from its clean end (règle 129, Monniz f113).
+--parts body,screen,island : outlines used (default all three); drop 'island' if it is hidden or not measured.
 """
 import os as _o, sys as _s; _s.path.insert(0, _o.path.dirname(_o.path.abspath(__file__))); import _mkpy  # noqa: E401,E702,F401  (bon Python + PATH)
 import sys, os, json
@@ -41,13 +47,25 @@ def rr_outline(w, h, r, n=24, z=0.0, dy=0.0):
 
 
 BEZ = 2.05 * MM
-OUT = {
-    'body': rr_outline(W_, H_, 10.6 * MM, z=D_ / 2 - 0.4 * MM),
-    'screen': rr_outline(W_ - 2 * BEZ, H_ - 2 * BEZ, 8.7 * MM, z=D_ / 2 + 0.2 * MM),
-    'island': rr_outline(19 * MM, 5.6 * MM, 2.8 * MM, n=10, z=D_ / 2 + 0.2 * MM, dy=H_ / 2 - BEZ - 5.2 * MM),
-}
-PTS = np.vstack([OUT['body'], OUT['screen'], OUT['island']])
-WGT = np.concatenate([np.full(len(OUT['body']), 1.0), np.full(len(OUT['screen']), 1.0), np.full(len(OUT['island']), 2.0)])
+_g = mk.arg(sys.argv, 'geom')
+if _g:   # measured mock-up geometry (fractions of the body height)
+    _asp, _cor, _bez, _iw, _ih, _it = map(float, _g.split(','))
+    W_ = _asp; BEZ = _bez
+    OUT = {
+        'body': rr_outline(W_, H_, _cor, z=D_ / 2 - 0.4 * MM),
+        'screen': rr_outline(W_ - 2 * BEZ, H_ - 2 * BEZ, max(_cor - BEZ, 0.005), z=D_ / 2 + 0.2 * MM),
+        'island': rr_outline(_iw, _ih, _ih / 2, n=10, z=D_ / 2 + 0.2 * MM, dy=H_ / 2 - _it),
+    }
+else:
+    OUT = {
+        'body': rr_outline(W_, H_, 10.6 * MM, z=D_ / 2 - 0.4 * MM),
+        'screen': rr_outline(W_ - 2 * BEZ, H_ - 2 * BEZ, 8.7 * MM, z=D_ / 2 + 0.2 * MM),
+        'island': rr_outline(19 * MM, 5.6 * MM, 2.8 * MM, n=10, z=D_ / 2 + 0.2 * MM, dy=H_ / 2 - BEZ - 5.2 * MM),
+    }
+_parts = (mk.arg(sys.argv, 'parts') or 'body,screen,island').split(',')
+_wdef = {'body': 1.0, 'screen': 1.0, 'island': 2.0}
+PTS = np.vstack([OUT[k] for k in _parts])
+WGT = np.concatenate([np.full(len(OUT[k]), _wdef[k]) for k in _parts])
 
 
 def rot(rx, ry, rz):
@@ -106,29 +124,37 @@ def main():
         fpx = (H / 2) / np.tan(np.radians(fv) / 2); return np.array([[fpx, 0, W / 2], [0, fpx, H / 2], [0, 0, 1.0]])
 
     def fit(p0, dt, mask, K):
+        # Simplexe initial EXPLICITE (règle 129) : par défaut scipy décale chaque paramètre de 5 %, mais un paramètre
+        # nul (rotations d'un départ de face, x = 0) n'est décalé que de 0,00025 → rotations jamais explorées
+        # (cas réel Monniz f83-95 : rx = ry = rz = 0,000 sur toutes les images, téléphone qui tourne pourtant).
         best = None
-        for scale in (1.0, 0.5):
+        for scale in (1.0, 0.35):
+            p0 = np.asarray(p0, float)
+            steps = np.array([0.02, 0.02, max(abs(p0[2]) * 0.05, 0.05), 3.0, 3.0, 3.0]) * scale
+            simplex = np.vstack([p0] + [p0 + np.eye(6)[i] * steps[i] for i in range(6)])
             r = minimize(cost, p0, args=(K, dt, mask, W, H), method='Nelder-Mead',
-                         options={'xatol': 1e-4, 'fatol': 1e-3, 'maxiter': 3000, 'initial_simplex': None})
+                         options={'xatol': 1e-4, 'fatol': 1e-3, 'maxiter': 3000, 'initial_simplex': simplex})
             if best is None or r.fun < best.fun:
                 best = r
             p0 = best.x
         return best
+    # --reverse : on part de f1 (image nette de fin de prise) vers f0 ; l'ancre / la recherche de focale se lisent sur f1
+    order = list(range(f0, f1 + 1, step)); order = order[::-1] if '--reverse' in a else order; fstart = order[0]
     anc = mk.arg(a, 'anchor')
     if anc:
         # init by search: rotations on a grid, position from the island anchor (pixel centre + apparent width),
         # several focal lengths; keep the lowest edge cost, then refine (match-move "landmark" init)
         au, av, aw = map(float, anc.split(','))
-        im, dt, mask = frame_maps(f0); best = None
+        im, dt, mask = frame_maps(fstart); best = None
         fovs = [float(v) for v in (mk.arg(a, 'fovs') or '8.5,12,16,20,25,30').split(',')]
-        isl_c = np.array([0, H_ / 2 - BEZ - 5.2 * MM, D_ / 2])
+        isl_c = np.array([0, (H_ / 2 - _it) if _g else (H_ / 2 - BEZ - 5.2 * MM), D_ / 2]); isl_w = _iw if _g else 19 * MM
         for fv in fovs:
             K_ = Kof(fv); fpx = K_[0, 0]
             for rx in range(-45, 6, 5):
                 for ry in range(-50, 11, 5):
                     for rz in range(-25, 11, 5):
                         R = rot(rx, ry, rz)
-                        wvec = R @ np.array([19 * MM, 0, 0]); wproj = np.hypot(wvec[0], wvec[1])
+                        wvec = R @ np.array([isl_w, 0, 0]); wproj = np.hypot(wvec[0], wvec[1])
                         z = -fpx * wproj / max(aw, 1)
                         c = R @ isl_c
                         X = (au - W / 2) / fpx * (-z) - c[0]; Y = -(av - H / 2) / fpx * (-z) - c[1]; Z = z - c[2]
@@ -141,7 +167,7 @@ def main():
     fs = mk.arg(a, 'fov-search')
     if fs:
         lo, hi = map(float, fs.split(','))
-        im, dt, mask = frame_maps(f0); res = []
+        im, dt, mask = frame_maps(fstart); res = []
         for fv in np.arange(lo, hi + 0.01, 2.0):
             # keep the apparent size: scale the distance with the focal length
             p_ = p.copy(); p_[2] = p[2] * np.tan(np.radians(fov) / 2) / np.tan(np.radians(fv) / 2)
@@ -150,11 +176,11 @@ def main():
         res.sort(key=lambda t: t[0]); _, fov, p = res[0]
         print(f'fov retenu {fov:.1f}° (coût {res[0][0]:.3f})')
     K = Kof(fov); rows = {}
-    for f in range(f0, f1 + 1, step):
+    for f in order:
         im, dt, mask = frame_maps(f)
         r = fit(p, dt, mask, K); p = r.x
         rows[f] = {k: round(float(v), 5) for k, v in zip(('x', 'y', 'z', 'rx', 'ry', 'rz'), p)}; rows[f]['cost_px'] = round(float(r.fun), 3)
-        if dbg and (f - f0) % 5 == 0:
+        if dbg and ((f - f0) % 5 == 0 or f in (f0, f1)):
             uv, _, _ = project(p, K); o = im.copy()
             for q in uv.astype(int):
                 if 0 <= q[0] < W and 0 <= q[1] < H:
