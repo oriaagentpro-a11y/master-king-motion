@@ -1,4 +1,5 @@
-"""NE PAS UTILISER TEL QUEL (règle 123) : sons « par défaut » interdits ; chaque film a sa palette conçue sur mesure.
+"""ANCIEN : sons synthétisés sans bibliothèque. Par défaut, utiliser la chaîne de la règle 143 (sfx_cues.py → sfx_source.py → sfx_place.py).
+NE PAS UTILISER TEL QUEL (règle 123) : sons « par défaut » interdits ; chaque film a sa palette conçue sur mesure.
 Sound design cues synthesised with numpy (no third-party samples): whoosh, hit, pop, click, riser, shimmer, sub.
 
 Usage: python3 sfx.py <out.wav> --duration 32.5 (--cues cues.json | --auto timing.json) [--seed 3]

@@ -71,6 +71,9 @@ Step "Outils d'analyse (Python)"
 Step "Modèle de transcription de la voix"
 & $Py -c "import os; from faster_whisper import WhisperModel; WhisperModel(os.environ.get('MK_WHISPER','small'), device='cpu', compute_type='int8'); print('modèle prêt')"
 
+Step "Oreilles des effets sonores (earshot : modèles CLAP / AST, ≈ 1 Go, une fois)"
+& $Py -m earshot doctor --fetch
+
 Step "Polices libres courantes (≈ 30 familles : Inter, Poppins, Montserrat…)"
 $Fonts = Join-Path $HOME ".cache\reverse-motion\google-fonts"
 $Fams = "inter poppins montserrat roboto opensans lato oswald raleway playfairdisplay dmsans spacegrotesk manrope plusjakartasans sora bebasneue anton archivo worksans rubik nunito urbanist outfit syne unbounded lexend barlow figtree onest instrumentsans dmserifdisplay".Split(" ") | ForEach-Object { "ofl/$_" }

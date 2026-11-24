@@ -155,6 +155,22 @@ Pour savoir ce qui tourne VRAIMENT : `ps -eo pid,etime,args | grep "[b]lender/ap
 (`pgrep -af "blender -b"` liste aussi les commandes d'attente qui contiennent ce texte : faux positifs). Une attente
 sur le journal d'un rendu qui ne démarrera jamais bloque toute la file : vérifier l'état réel avant d'attendre.
 
+## 7 bis. Effets sonores (règle 143)
+Sur le film VALIDÉ (après le storyboard), avant `finalize.py` :
+```
+python3 $MK/scripts/render_film.py film.html out/film_silent.mp4 --timing timing.json
+python3 $MK/scripts/sfx_cues.py film.html timing.json audio/cues.json --video out/film_silent.mp4
+#   relire audio/cues.json : moments, familles (need), écarts ; corriger à la main si besoin
+python3 $MK/scripts/sfx_source.py audio/cues.json audio/ --brief "soft"          # Openverse + earshot (find, make, rank, build)
+#   lire le classement imprimé ; une famille FAIBLE se signale ; on peut forcer un autre candidat dans sfx_library.json
+python3 $MK/scripts/sfx_place.py audio/cues.json audio/sfx_library.json audio/sfx.wav
+python3 $MK/scripts/finalize.py out/film_silent.mp4 out/final.mp4 --music … --voice … --sfx audio/sfx.wav --timing timing.json
+python3 -m earshot timeline out/final.mp4 --cues audio/cues.json                    # synchro entendue sur le fichier fini
+```
+Familles : pop (apparition), tick, key (frappe), impact (révélation), land (arrêt), lock (compteur), chime (logo),
+swish (seulement sur demande). Forçage dans le film : `data-sfx="chime"` / `data-sfx="none"`, `data-sfx-gain="-6"`.
+Crédits : `audio/CREDITS_SFX.md` → description de la vidéo + rapport.
+
 ## 8. Proposer « notre plus » (après une première version fidèle)
 ```
 python3 $MK/scripts/nervosity_audit.py timing.json out/compare/reference_recalee.mp4 out/film_silent.mp4 --json out/compare/nervosity.json

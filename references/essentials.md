@@ -30,6 +30,7 @@ l'étape concernée. Plusieurs sujets peuvent se cumuler (`python3 scripts/rules
 | Captures d'app, PSD, logos fournis | `visuels` |
 | On adapte à la marque, on ajoute des éléments | `adaptation` |
 | Storyboard à produire ou à faire valider | `storyboard` |
+| Effets sonores (TOUJOURS après validation du storyboard, phase 6) | `son` |
 | Avant le rendu final et avant toute livraison | `qualite`, `rendu` |
 | Un bug dans une scène HTML / GSAP | `code` |
 | Référence donnée par un lien | `lien` |

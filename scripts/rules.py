@@ -29,7 +29,7 @@ TOPICS = {   # topic: (trigger words, rule numbers)
     'qualite':    ('tremblement, nervosité, zones mortes, effet PowerPoint, rythme mou', [50, 53, 54, 65, 67, 74, 87, 88, 110, 113, 115, 122, 127]),
     'rendu':      ('rendu, assemblage, HD, livraison, durée', [137, 34, 50, 51, 103, 104, 109, 119]),
     'code':       ('pièges JavaScript / GSAP / recettes', [13, 16, 48, 58, 77, 128]),
-    'son':        ('effets sonores, frappes, impacts, whoosh, mixage', [142, 141, 35, 107, 123]),
+    'son':        ('effets sonores, Openverse, earshot, repérage des sons, frappes, impacts, mixage', [143, 142, 141, 35, 107, 123]),
     'fusion':     ('plusieurs vidéos de référence', [19, 85]),
     'lien':       ('référence donnée par un lien', [81]),
     'installation': ('installation, outil introuvable, mauvais Python', [118, 120]),

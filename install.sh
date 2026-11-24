@@ -84,6 +84,9 @@ if [[ "${1:-}" != "--check" ]]; then
   "$PY" -c "import os; from faster_whisper import WhisperModel; WhisperModel(os.environ.get('MK_WHISPER','small'), device='cpu', compute_type='int8'); print('modèle prêt')" \
     || echo "(modèle non téléchargé : il le sera au premier calage de voix)"
 
+  step "Oreilles des effets sonores (earshot : modèles CLAP / AST, ≈ 1 Go, une fois)"
+  "$PY" -m earshot doctor --fetch || echo "(modèles earshot non téléchargés : ils le seront au premier classement de sons)"
+
   step "Polices libres courantes (≈ 30 familles : Inter, Poppins, Montserrat…)"
   bash "$HERE/scripts/get_fonts.sh" --essentials || echo "(polices non téléchargées : relancer bash scripts/get_fonts.sh --essentials)"
 

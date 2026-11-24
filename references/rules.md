@@ -671,7 +671,9 @@ nécessaire). Une règle ne s'enlève jamais. Si elle doit changer, la nouvelle 
      (4) Lecteur simulé : bouton et minuteur en `flex:0 0 auto`, onde `min-width:0; overflow:hidden` (sinon bouton écrasé
      et minuteur qui déborde).
 
-123. **INTERDIT CATÉGORIQUE : aucun effet sonore « par défaut » ni de banque toute faite.** Ni les préréglages de
+123. **(Remplacée par la règle 143 pour la provenance des sons : Openverse + earshot.) Toujours vrai : aucun effet sonore
+     « par défaut » réutilisé tel quel d'un film à l'autre, palette choisie POUR CE FILM.** Texte d'origine :
+     **INTERDIT CATÉGORIQUE : aucun effet sonore « par défaut » ni de banque toute faite.** Ni les préréglages de
      `sfx.py`, ni des sons génériques réutilisés d'un projet à l'autre : à chaque vidéo, Claude CONÇOIT une palette
      sonore neuve, propre au film (caractère, hauteur, longueur, grain réglés d'après les attaques mesurées dans la
      référence et le style de la marque), synthétisée en code (`sfx_premium.py` comme base de travail, à adapter :
@@ -885,6 +887,8 @@ nécessaire). Une règle ne s'enlève jamais. Si elle doit changer, la nouvelle 
      (rayon converti en px du canevas). Écho de traînée (icône qui arrive) : copies aux positions passées, opacité décroissante.
 
 141. **Design sonore : sons de bibliothèque sous licence vérifiée, jamais de son synthétisé par défaut, jamais de woosh.**
+     (Outillé par la règle 143 : la bibliothèque est désormais Openverse, le tri à la mesure est fait par earshot ;
+     « jamais de woosh » reste vrai par défaut.)
      Retour Monniz : « aucun effet sonore par défaut de Claude, jamais de woosh ». Méthode : 1) analyser le son de la réf. :
      séparation `demucs` (htdemucs : voix / autres / batterie / basse), onsets hors de la grille de doubles-croches du tempo
      = candidats effets (Monniz : la réf. est une chanson, presque aucun effet distinct → design sonore construit sur nos
@@ -903,3 +907,36 @@ nécessaire). Une règle ne s'enlève jamais. Si elle doit changer, la nouvelle 
      (`HOLDS` [image réf., images ajoutées], la réf. avance d'une image en 1+E images) et horloge propre décalée par élément ;
      le reste du film = mêmes images décalées (renommer les PNG rendus au lieu de les refaire). Coups sonores : vérifiés
      sur les images RENDUES (pic de différence d'image à ±3 images), recalés sur le pic, jamais deux coups à < 3 images.
+
+143. **Effets sonores : repérer sur le MONTAGE, chercher dans Openverse, écouter avec earshot, générer si rien ne va,
+     poser à l'image près.** Demande utilisateur : « accès à des millions de sons gratuits, choisir ce qui fonctionne
+     vraiment, en générer un nouveau si aucun ne convient, et placer chaque son exactement quand un élément apparaît ».
+     Se fait en phase 6, APRÈS validation du storyboard, sur le film tel qu'il sera rendu. Trois scripts :
+     (1) **Repérage (`sfx_cues.py`, rôle « real-sfx »)** : le film est seeké image par image dans Chromium et l'état réel
+     de chaque élément est lu (opacité effective, place, taille, vitesse, texte) : apparition (image où l'opacité
+     effective passe 50 %) -> pop ; grand élément ≥ 12 % de l'écran -> impact ; fin d'un glissé / zoom -> land ;
+     caractères tapés -> une frappe chacun (≤ 12 /s) ; nombre qui se fige -> lock ; coupe -> rien ; pic de vitesse ->
+     swish DÉSACTIVÉ par défaut (règle 141). Un objet = un son (parent + enfants regroupés, l'arrêt qui conclut une
+     entrée ne sonne pas deux fois). Densité ≈ 5 sons conçus / 10 s hors frappes (une série rapprochée compte pour un
+     geste), jamais deux sons à < 3 images (règle 142). Avec `--video` (rendu muet), recalage sur le pic de différence
+     d'image à ±3 images. Forçage dans le film : `data-sfx="pop|tick|key|impact|land|lock|chime|swish|none"` et
+     `data-sfx-gain="-6"`. Claude RELIT `audio/cues.json` (moments, familles) avant de chercher : il retire ce qui
+     ferait « jeu vidéo », ajoute ce que l'œil attend.
+     (2) **Sources (`sfx_source.py`)** : par famille, recherches Openverse (API publique, sans clé ; Freesound,
+     Wikimedia…), licences **CC0, domaine public, CC BY seulement** (NC / ND / SA refusées : film commercial) ;
+     earshot `find` découpe le meilleur coup dans chaque prise ; earshot `make` ajoute 3 sons générés ; earshot `rank`
+     (CLAP) écoute et classe tout ; si rien n'est au moins « plausible », earshot `build` construit un son neuf et on
+     réécoute. Les descriptions CLAP doivent rester proches du vocabulaire d'earshot (« a chat message pop »,
+     « a punchy impact hit » : une description maison comme « a soft short ui pop » donne « no match » même sur un bon
+     son). `--brief "soft glass"` donne au film UNE palette (même matière partout). Sortie `audio/sfx_library.json`
+     (choix + 2 alternatives par famille, z, verdict, licence, attribution) et `audio/CREDITS_SFX.md` : les crédits CC BY
+     vont dans la description de la vidéo et dans le rapport de livraison. Une famille marquée FAIBLE est signalée à
+     l'utilisateur.
+     (3) **Pose (`sfx_place.py`)** : l'attaque mesurée du son (-20 dB du pic) tombe sur l'image du repère (le pic pour
+     un swish ou un impact) ; rotation des alternatives (jamais deux fois de suite le même fichier), ±1 demi-ton et ±1,5 dB sur les
+     sons répétés, série en escalier (+0,5 demi-ton par coup), niveaux par famille (frappes -17 dB, impact -3 dB),
+     fondus 3 / 15 ms ; feuille de coups `audio/sfx_sheet.json`. Puis `finalize.py --sfx audio/sfx.wav` et contrôle du
+     fichier FINI : `python -m earshot timeline out/final.mp4 --cues audio/cues.json` (synchro son / image entendue)
+     + retranscription de la voix sur le mix (intelligibilité). Téléchargements : seulement des fichiers audio
+     d'Openverse (CDN Freesound / Wikimedia), un à la fois, jamais exécutés ; ils restent dans `audio/assets/` du projet
+     et ne sont jamais publiés tels quels.

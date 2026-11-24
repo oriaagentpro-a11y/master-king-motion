@@ -27,7 +27,7 @@ for exe, fix in [('node', 'Node.js 18+ : https://nodejs.org'), ('ffmpeg', 'brew/
     line(shutil.which(exe) is not None, exe, fix)
 for mod, pkg in [('numpy', 'numpy'), ('cv2', 'opencv-python'), ('skimage', 'scikit-image'), ('scipy', 'scipy'),
                  ('PIL', 'pillow'), ('playwright', 'playwright'), ('librosa', 'librosa'), ('fontTools', 'fonttools'),
-                 ('faster_whisper', 'faster-whisper'), ('psd_tools', 'psd-tools')]:
+                 ('faster_whisper', 'faster-whisper'), ('psd_tools', 'psd-tools'), ('earshot', 'earshot')]:
     try:
         importlib.import_module(mod); good = True
     except Exception:  # noqa: BLE001

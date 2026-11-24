@@ -11,7 +11,7 @@ Rien n'est « à peu près » : chaque valeur vient d'une mesure sur la référe
 
 Outils : `scripts/` (Python), `engine/` (rendu Chromium + GSAP), `templates/film.html`.
 **Avant CHAQUE vidéo, lire `references/essentials.md`** (court) : choix AUTOMATIQUE du mode (Rapide par défaut,
-Studio si copie exacte demandée ou si une scène résiste aux contrôles), déclencheurs et règles de base. Les 124 règles
+Studio si copie exacte demandée ou si une scène résiste aux contrôles), déclencheurs et règles de base. Les 143 règles
 d'or de `references/rules.md` ne se lisent PAS en entier : Claude charge lui-même les sujets utiles au moment où ils
 servent, avec `python3 scripts/rules.py <sujet>` (`--topics` pour la liste : 3d, voix, texte, suivi, studio…).
 L'utilisateur n'a jamais à dire quelles règles appliquer. Commandes : `references/workflow.md` ; qualité :
@@ -29,7 +29,10 @@ mémoire technique des mesures (pièges P1–P27).
   par plan, le fait valider, génère une réplique par fichier, vérifie par retranscription, puis cale. Si l'utilisateur
   préfère sa propre voix, il fournit son fichier. **Musique : fournie par l'utilisateur** (bibliothèque libre de droits) ;
   à défaut, on propose une direction musicale et on attend son fichier.
-- Effets sonores seulement si la référence en a, ou sur demande (`sfx.py`).
+- **Effets sonores : faits par Claude, par défaut, sur chaque film** (règle 143), sauf si l'utilisateur n'en veut pas.
+  Chaque moment qui demande un son est repéré sur le montage (`sfx_cues.py`), le son est cherché parmi les millions de
+  sons libres d'**Openverse**, écouté et classé par **earshot** (et généré par earshot si aucun ne convient), puis posé
+  à l'image près (`sfx_place.py`). Sobre : ~5 sons conçus par 10 s, pas de « woosh » sauf demande (règle 141).
 
 
 ## Deux modes (choisis automatiquement, voir `references/essentials.md`)
@@ -115,8 +118,14 @@ surfaces suivies = `homography_track.py` → `rectify_median.py` (planche média
 
 6. **Rendu, mixage, preuves**
    - `render_film.py film.html out/film_silent.mp4 --timing timing.json`
-   - `finalize.py out/film_silent.mp4 out/final.mp4 --music … --voice … --timing timing.json` (voix nette, musique
-     baissée sous la voix, -14 LUFS, H.264 haute qualité)
+   - **Effets sonores (règle 143, `rules.py son`)**, sur le film validé :
+     `sfx_cues.py film.html timing.json audio/cues.json --video out/film_silent.mp4` (repérage : chaque apparition,
+     arrêt, frappe, compteur, révélation ; Claude relit et corrige la liste) →
+     `sfx_source.py audio/cues.json audio/ --brief "<matière du film>"` (Openverse CC0 / CC BY → earshot écoute, classe,
+     génère si rien ne convient) → `sfx_place.py audio/cues.json audio/sfx_library.json audio/sfx.wav` (pose à l'image).
+   - `finalize.py out/film_silent.mp4 out/final.mp4 --music … --voice … --sfx audio/sfx.wav --timing timing.json`
+     (voix nette, musique baissée sous la voix, effets sous la voix, -14 LUFS, H.264 haute qualité), puis
+     `python -m earshot timeline out/final.mp4 --cues audio/cues.json` (synchro des sons entendue sur le fichier fini)
    - `style_compare.py ref.mp4 out/final.mp4 timing.json out/style [--brand-colors]` : la référence est rejouée sur la
      nouvelle horloge, puis on compare rythme, événements, attaque, énergie, mise en page, lumière, netteté et grain,
      scène par scène. **Regarder `side_by_side.mp4` en entier.**
@@ -131,7 +140,9 @@ surfaces suivies = `homography_track.py` → `rectify_median.py` (planche média
      en page). Un score n'est jamais une preuve à lui seul.
 
 7. **Livrer** : `final.mp4`, `side_by_side.mp4`, et un rapport court : scènes et références utilisées, police,
-   scores par scène, écarts restants et leur raison, ce qui vient de visuels générés par l'utilisateur.
+   scores par scène, écarts restants et leur raison, ce qui vient de visuels générés par l'utilisateur, les effets
+   sonores (familles, sources Openverse ou earshot, familles « faibles ») et `audio/CREDITS_SFX.md` (crédits CC BY à
+   coller dans la description de la vidéo).
 
 ## Règles absolues
 
@@ -145,6 +156,8 @@ surfaces suivies = `homography_track.py` → `rectify_median.py` (planche média
 - Droits : on reprend une recette (rythme, style), pas une œuvre. Pas de logo, de personnage ni de plan copié d'une
   autre marque. Les éléments de la marque de l'utilisateur viennent de lui.
 - Toujours dire ce qui a été vérifié et ce qui ne l'a pas été.
+- Effets sonores : uniquement des sons Openverse sous CC0 / domaine public / CC BY (crédités) ou rendus par earshot ;
+  jamais NC, ND, SA, ni un son extrait de la référence ; chaque son causé par quelque chose à l'écran, posé sur son image.
 - Toute 3D de la référence (téléphone, produit, logo, icônes en orbite) se fait en vraie 3D photoréaliste avec
   **Blender Cycles** (`blender/` : `phone_build.py`, `icon_build.py`, `tokens_build.py`, `render_job.py`), avec la
   pose mesurée image par image (`pose_from_quad.py`, `pose_refine_edges.py`) ou exportée du film (`export_probe.py`),
